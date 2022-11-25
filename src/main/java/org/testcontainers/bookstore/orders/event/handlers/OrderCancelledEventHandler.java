@@ -21,7 +21,7 @@ public class OrderCancelledEventHandler {
         this.notificationService = notificationService;
     }
 
-    @KafkaListener(topics = "${app.cancelled-orders-topic}", groupId = "bookstore")
+    @KafkaListener(topics = "${app.cancelled-orders-topic}")
     public void handle(OrderCancelledEvent event) {
         log.info("Received a OrderCancelledEvent with orderId:{}: ", event.getOrderId());
         Order order = orderService.findOrderByOrderId(event.getOrderId()).orElse(null);

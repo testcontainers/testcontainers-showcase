@@ -34,7 +34,7 @@ public class OrderCreatedEventHandler {
         this.properties = properties;
     }
 
-    @KafkaListener(topics = "${app.new-orders-topic}", groupId = "bookstore")
+    @KafkaListener(topics = "${app.new-orders-topic}")
     public void handle(OrderCreatedEvent event) {
         log.info("Received a OrderCreatedEvent with orderId:{}: ", event.getOrderId());
         Order order = orderService.findOrderByOrderId(event.getOrderId()).orElse(null);

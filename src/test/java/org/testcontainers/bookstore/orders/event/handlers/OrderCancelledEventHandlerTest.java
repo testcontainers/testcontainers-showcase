@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import java.util.UUID;
 
@@ -22,11 +20,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
-
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        overridePropertiesInternal(registry);
-    }
 
     @Autowired
     private OrderRepository orderRepository;
@@ -57,7 +50,7 @@ class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
 
         kafkaTemplate.send(properties.cancelledOrdersTopic(), new OrderCancelledEvent(order.getOrderId()));
 
-        await().atMost(10, SECONDS).untilAsserted(() -> {
+        await().atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService).sendCancelledNotification(any(Order.class));
         });
 
