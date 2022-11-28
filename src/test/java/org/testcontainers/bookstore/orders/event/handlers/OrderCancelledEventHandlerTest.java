@@ -1,5 +1,8 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
+import org.junit.jupiter.api.Disabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.bookstore.ApplicationProperties;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.events.OrderCancelledEvent;
@@ -19,7 +22,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+@Disabled
 class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
+    private static final Logger log = LoggerFactory.getLogger(OrderCancelledEventHandlerTest.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -46,8 +51,9 @@ class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
         order.setDeliveryAddressZipCode("500072");
         order.setDeliveryAddressCountry("India");
 
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
 
+        log.info("Cancelling OrderId: {}", order.getOrderId());
         kafkaTemplate.send(properties.cancelledOrdersTopic(), new OrderCancelledEvent(order.getOrderId()));
 
         await().atMost(30, SECONDS).untilAsserted(() -> {
