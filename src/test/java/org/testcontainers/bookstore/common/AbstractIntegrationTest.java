@@ -5,9 +5,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.bookstore.notifications.NotificationService;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MockServerContainer;
@@ -33,6 +35,9 @@ public abstract class AbstractIntegrationTest {
     static final MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
 
     protected static MockServerClient mockServerClient;
+
+    @MockBean
+    protected NotificationService notificationService;
 
     @BeforeAll
     static void beforeAll() {

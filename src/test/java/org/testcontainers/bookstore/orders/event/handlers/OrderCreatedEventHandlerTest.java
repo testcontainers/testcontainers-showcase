@@ -1,18 +1,15 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
-import org.junit.jupiter.api.Disabled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.bookstore.ApplicationProperties;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.events.OrderCreatedEvent;
-import org.testcontainers.bookstore.notifications.NotificationService;
 import org.testcontainers.bookstore.orders.domain.OrderRepository;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.UUID;
@@ -24,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@Disabled
 class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(OrderCreatedEventHandlerTest.class);
     @Autowired
@@ -35,9 +31,6 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
 
     @Autowired
     private ApplicationProperties properties;
-
-    @MockBean
-    private NotificationService notificationService;
 
     @Test
     void shouldIgnoreOrderCreatedEventWhenOrderNotFound() {
