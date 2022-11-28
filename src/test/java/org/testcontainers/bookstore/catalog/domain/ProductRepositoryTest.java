@@ -25,7 +25,7 @@ class ProductRepositoryTest {
     private ProductRepository productRepository;
 
     @Container
-    static final MongoDBContainer mongodb = new MongoDBContainer("mongo:4.2").withExposedPorts(27017);
+    static final MongoDBContainer mongodb = new MongoDBContainer("mongo:4.2");
 
     @DynamicPropertySource
     static void overridePropertiesInternal(DynamicPropertyRegistry registry) {
