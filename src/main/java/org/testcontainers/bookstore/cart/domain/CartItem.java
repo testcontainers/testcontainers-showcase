@@ -1,7 +1,10 @@
 package org.testcontainers.bookstore.cart.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CartItem {
     private String productCode;
     private String productName;
@@ -9,6 +12,7 @@ public class CartItem {
     private BigDecimal productPrice;
     private int quantity;
 
+    @JsonIgnoreProperties
     public CartItem() {
     }
 
