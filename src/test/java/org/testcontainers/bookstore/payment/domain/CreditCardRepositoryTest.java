@@ -56,4 +56,26 @@ class CreditCardRepositoryTest {
         Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber("1111111111111");
         assertThat(optionalCreditCard).isEmpty();
     }
+
+    @Test
+    void shouldGetAllProducts2() {
+        List<CreditCard> creditCards = creditCardRepository.findAll();
+        assertThat(creditCards).hasSize(2);
+    }
+
+    @Test
+    void shouldGetCreditCardByCardNumber2() {
+        Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber("1111222233334444");
+        assertThat(optionalCreditCard).isNotEmpty();
+        assertThat(optionalCreditCard.get().getCardNumber()).isEqualTo("1111222233334444");
+        assertThat(optionalCreditCard.get().getCvv()).isEqualTo("123");
+        assertThat(optionalCreditCard.get().getExpiryMonth()).isEqualTo(2);
+        assertThat(optionalCreditCard.get().getExpiryYear()).isEqualTo(2025);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenCardNumberNotFound2() {
+        Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber("1111111111111");
+        assertThat(optionalCreditCard).isEmpty();
+    }
 }

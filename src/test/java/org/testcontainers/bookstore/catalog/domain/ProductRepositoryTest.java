@@ -55,4 +55,20 @@ class ProductRepositoryTest {
         assertThat(optionalProduct.get().getDescription()).isEqualTo("Product 1 desc");
         assertThat(optionalProduct.get().getPrice()).isEqualTo(BigDecimal.TEN);
     }
+
+    @Test
+    void shouldGetAllProducts2() {
+        List<Product> products = productRepository.findAll();
+        assertThat(products).hasSize(2);
+    }
+
+    @Test
+    void shouldGetProductByCode2() {
+        Optional<Product> optionalProduct = productRepository.findByCode("P100");
+        assertThat(optionalProduct).isNotEmpty();
+        assertThat(optionalProduct.get().getCode()).isEqualTo("P100");
+        assertThat(optionalProduct.get().getName()).isEqualTo("Product 1");
+        assertThat(optionalProduct.get().getDescription()).isEqualTo("Product 1 desc");
+        assertThat(optionalProduct.get().getPrice()).isEqualTo(BigDecimal.TEN);
+    }
 }

@@ -123,4 +123,78 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         });
 
     }
+
+
+    @Test
+    void shouldIgnoreOrderCreatedEventWhenOrderStatusIsNotNEW2() {
+        Order order = new Order();
+        order.setOrderId(UUID.randomUUID().toString());
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setCustomerName("Siva");
+        order.setCustomerEmail("siva@gmail.com");
+        order.setDeliveryAddressLine1("addr line 1");
+        order.setDeliveryAddressLine2("addr line 2");
+        order.setDeliveryAddressCity("Hyderabad");
+        order.setDeliveryAddressState("Telangana");
+        order.setDeliveryAddressZipCode("500072");
+        order.setDeliveryAddressCountry("India");
+
+        orderRepository.save(order);
+
+        kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
+
+        await().atMost(5, SECONDS).untilAsserted(() -> {
+            verify(notificationService, never()).sendConfirmationNotification(any(Order.class));
+        });
+
+    }
+
+    @Test
+    void shouldHandleAndDeliverOrderForGivenOrderCreatedEvent2() {
+        Order order = new Order();
+        order.setOrderId(UUID.randomUUID().toString());
+        order.setStatus(OrderStatus.NEW);
+        order.setCustomerName("Siva");
+        order.setCustomerEmail("siva@gmail.com");
+        order.setDeliveryAddressLine1("addr line 1");
+        order.setDeliveryAddressLine2("addr line 2");
+        order.setDeliveryAddressCity("Hyderabad");
+        order.setDeliveryAddressState("Telangana");
+        order.setDeliveryAddressZipCode("500072");
+        order.setDeliveryAddressCountry("India");
+
+        orderRepository.save(order);
+
+        kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
+
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            verify(notificationService).sendConfirmationNotification(any(Order.class));
+        });
+
+    }
+
+    @Test
+    void shouldCancelOrderWhenOrderCanNotBeDelivered2() {
+        Order order = new Order();
+        order.setOrderId(UUID.randomUUID().toString());
+        order.setStatus(OrderStatus.NEW);
+        order.setCustomerName("Siva");
+        order.setCustomerEmail("siva@gmail.com");
+        order.setDeliveryAddressLine1("addr line 1");
+        order.setDeliveryAddressLine2("addr line 2");
+        order.setDeliveryAddressCity("Japan");
+        order.setDeliveryAddressState("Japan");
+        order.setDeliveryAddressZipCode("500072");
+        order.setDeliveryAddressCountry("Japan");
+
+        orderRepository.save(order);
+
+        kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
+
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            Order verifyingOrder = orderRepository.findByOrderId(order.getOrderId()).orElseThrow();
+            assertThat(verifyingOrder.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+        });
+
+    }
 }

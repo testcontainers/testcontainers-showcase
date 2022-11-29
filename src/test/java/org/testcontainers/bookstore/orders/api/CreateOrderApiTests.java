@@ -196,4 +196,160 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
             return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.CANCELLED;
         });
     }
+
+    @Test
+    void shouldCreateOrderSuccessfully2() {
+        OrderConfirmationDTO orderConfirmationDTO = given()
+          .contentType(ContentType.JSON)
+          .body(
+            """
+                    {
+                        "customerName": "Siva",
+                        "customerEmail": "siva@gmail.com",
+                        "deliveryAddressLine1": "Birkelweg",
+                        "deliveryAddressLine2": "Hans-Edenhofer-Straße 23",
+                        "deliveryAddressCity": "Berlin",
+                        "deliveryAddressState": "Berlin",
+                        "deliveryAddressZipCode": "94258",
+                        "deliveryAddressCountry": "Germany",
+                        "cardNumber": "1111222233334444",
+                        "cvv": "123",
+                        "expiryMonth": 2,
+                        "expiryYear": 2030,
+                        "items": [
+                            {
+                                "productCode": "P100",
+                                "productName": "Product 1",
+                                "productPrice": 25.50,
+                                "quantity": 1
+                            }
+                        ]
+                    }
+                    """
+          )
+          .when()
+          .post("/api/orders")
+          .then()
+          .statusCode(202)
+          .body("orderId", notNullValue())
+          .body("orderStatus", is("NEW"))
+          .extract().body().as(OrderConfirmationDTO.class);
+
+        await().pollInterval(Duration.ofSeconds(5)).atMost(20, SECONDS).until(() -> {
+            Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
+            return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.DELIVERED;
+        });
+    }
+
+    @Test
+    void shouldCreateOrderWithErrorStatusWhenPaymentRejected2() {
+        given()
+          .contentType(ContentType.JSON)
+          .body(
+            """
+            {
+                "customerName": "Siva",
+                "customerEmail": "siva@gmail.com",
+                "deliveryAddressLine1": "Birkelweg",
+                "deliveryAddressLine2": "Hans-Edenhofer-Straße 23",
+                "deliveryAddressCity": "Berlin",
+                "deliveryAddressState": "Berlin",
+                "deliveryAddressZipCode": "94258",
+                "deliveryAddressCountry": "Germany",
+                "cardNumber": "1111222233334444",
+                "cvv": "345",
+                "expiryMonth": 2,
+                "expiryYear": 2024,
+                "items": [
+                    {
+                        "productCode": "P100",
+                        "productName": "Product 1",
+                        "productPrice": 25.50,
+                        "quantity": 1
+                    }
+                ]
+            }
+            """
+          )
+          .when()
+          .post("/api/orders")
+          .then()
+          .statusCode(202)
+          .body("orderId", notNullValue())
+          .body("orderStatus", is("ERROR"))
+        ;
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenMandatoryDataIsMissing2() {
+        given()
+          .contentType(ContentType.JSON)
+          .body(
+            """
+            {
+                "cardNumber": "1111222233334444",
+                "cvv": "345",
+                "expiryMonth": 2,
+                "expiryYear": 2024,
+                "items": [
+                    {
+                        "productCode": "P100",
+                        "productName": "Product 1",
+                        "productPrice": 25.50,
+                        "quantity": 1
+                    }
+                ]
+            }
+            """
+          )
+          .when()
+          .post("/api/orders")
+          .then()
+          .statusCode(400)
+        ;
+    }
+
+    @Test
+    void shouldCancelOrderWhenCanNotBeDelivered2() {
+        OrderConfirmationDTO orderConfirmationDTO = given()
+          .contentType(ContentType.JSON)
+          .body(
+            """
+                    {
+                        "customerName": "Siva",
+                        "customerEmail": "siva@gmail.com",
+                        "deliveryAddressLine1": "Birkelweg",
+                        "deliveryAddressLine2": "Hans-Edenhofer-Straße 23",
+                        "deliveryAddressCity": "Turkey",
+                        "deliveryAddressState": "Turkey",
+                        "deliveryAddressZipCode": "94258",
+                        "deliveryAddressCountry": "Turkey",
+                        "cardNumber": "1111222233334444",
+                        "cvv": "123",
+                        "expiryMonth": 2,
+                        "expiryYear": 2030,
+                        "items": [
+                            {
+                                "productCode": "P100",
+                                "productName": "Product 1",
+                                "productPrice": 25.50,
+                                "quantity": 1
+                            }
+                        ]
+                    }
+                    """
+          )
+          .when()
+          .post("/api/orders")
+          .then()
+          .statusCode(202)
+          .body("orderId", notNullValue())
+          .body("orderStatus", is("NEW"))
+          .extract().body().as(OrderConfirmationDTO.class);
+
+        await().atMost(15, SECONDS).until(() -> {
+            Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
+            return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.CANCELLED;
+        });
+    }
 }

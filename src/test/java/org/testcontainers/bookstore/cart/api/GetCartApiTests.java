@@ -75,4 +75,43 @@ class GetCartApiTests extends AbstractIntegrationTest {
                 .body("items", hasSize(0))
         ;
     }
+
+    @Test
+    void shouldGetNewCart2() {
+        given()
+          .contentType(ContentType.JSON)
+          .when()
+          .get("/api/carts")
+          .then()
+          .statusCode(200)
+          .body("id", notNullValue())
+          .body("items", hasSize(0))
+        ;
+    }
+
+    @Test
+    void shouldGetNotFoundWhenCartIdNotExist2() {
+        given()
+          .contentType(ContentType.JSON)
+          .when()
+          .get("/api/carts?cartId=non-existing-cart-id")
+          .then()
+          .statusCode(404)
+        ;
+    }
+
+    @Test
+    void shouldGetExistingCart2() {
+        String cartId = UUID.randomUUID().toString();
+        cartRepository.save(new Cart(cartId, Set.of()));
+        given()
+          .contentType(ContentType.JSON)
+          .when()
+          .get("/api/carts?cartId={cartId}", cartId)
+          .then()
+          .statusCode(200)
+          .body("id", is(cartId))
+          .body("items", hasSize(0))
+        ;
+    }
 }

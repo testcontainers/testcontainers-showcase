@@ -94,4 +94,64 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(400);
     }
+
+    @Test
+    void shouldAuthorizePaymentSuccessfully2() {
+        given()
+          .contentType(ContentType.JSON)
+          .body(
+            """
+            {
+                "cardNumber": "1111222233334444",
+                "cvv": "123",
+                "expiryMonth": 2,
+                "expiryYear": 2025
+            }
+            """
+          )
+          .when()
+          .post("/api/payments/authorize")
+          .then()
+          .statusCode(200)
+          .body("status", is("ACCEPTED"));
+    }
+
+    @Test
+    void shouldRejectPaymentWhenCVVIsIncorrect2() {
+        given()
+          .contentType(ContentType.JSON)
+          .body(
+            """
+            {
+                "cardNumber": "1111222233334444",
+                "cvv": "111",
+                "expiryMonth": 2,
+                "expiryYear": 2024
+            }
+            """
+          )
+          .when()
+          .post("/api/payments/authorize")
+          .then()
+          .statusCode(200)
+          .body("status", is("REJECTED"));
+    }
+
+    @Test
+    void shouldFailWhenMandatoryDataIsMissing2() {
+        given()
+          .contentType(ContentType.JSON)
+          .body(
+            """
+            {
+                "cardNumber": "1111222233334444",
+                "cvv": "111"
+            }
+            """
+          )
+          .when()
+          .post("/api/payments/authorize")
+          .then()
+          .statusCode(400);
+    }
 }

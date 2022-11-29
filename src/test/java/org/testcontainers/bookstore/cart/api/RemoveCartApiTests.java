@@ -50,4 +50,18 @@ class RemoveCartApiTests extends AbstractIntegrationTest {
                 .statusCode(200);
         assertThat(cartRepository.findById(cartId)).isEmpty();
     }
+
+    @Test
+    void shouldRemoveCart2() {
+        String cartId = UUID.randomUUID().toString();
+        cartRepository.save(new Cart(cartId, Set.of(
+          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
+        )));
+        given()
+          .when()
+          .delete("/api/carts?cartId={cartId}", cartId)
+          .then()
+          .statusCode(200);
+        assertThat(cartRepository.findById(cartId)).isEmpty();
+    }
 }
