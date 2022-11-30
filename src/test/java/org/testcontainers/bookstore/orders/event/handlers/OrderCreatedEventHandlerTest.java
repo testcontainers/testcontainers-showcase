@@ -1,15 +1,15 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.bookstore.ApplicationProperties;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.events.OrderCreatedEvent;
-import org.testcontainers.bookstore.notifications.NotificationService;
 import org.testcontainers.bookstore.orders.domain.OrderRepository;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -24,6 +24,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
+    private static final Logger log = LoggerFactory.getLogger(OrderCreatedEventHandlerTest.class);
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -38,9 +39,6 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
 
     @Autowired
     private ApplicationProperties properties;
-
-    @MockBean
-    private NotificationService notificationService;
 
     @Test
     void shouldIgnoreOrderCreatedEventWhenOrderNotFound() {
@@ -65,8 +63,8 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         order.setDeliveryAddressZipCode("500072");
         order.setDeliveryAddressCountry("India");
 
-        orderRepository.save(order);
-
+        orderRepository.saveAndFlush(order);
+        log.info("Created OrderId: {}", order.getOrderId());
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
         await().atMost(5, SECONDS).untilAsserted(() -> {
@@ -89,11 +87,11 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         order.setDeliveryAddressZipCode("500072");
         order.setDeliveryAddressCountry("India");
 
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
 
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
-        await().atMost(10, SECONDS).untilAsserted(() -> {
+        await().atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService).sendConfirmationNotification(any(Order.class));
         });
 
@@ -113,7 +111,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         order.setDeliveryAddressZipCode("500072");
         order.setDeliveryAddressCountry("Japan");
 
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
 
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
@@ -139,7 +137,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         order.setDeliveryAddressZipCode("500072");
         order.setDeliveryAddressCountry("India");
 
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
 
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
@@ -163,7 +161,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         order.setDeliveryAddressZipCode("500072");
         order.setDeliveryAddressCountry("India");
 
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
 
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
@@ -187,7 +185,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         order.setDeliveryAddressZipCode("500072");
         order.setDeliveryAddressCountry("Japan");
 
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
 
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 

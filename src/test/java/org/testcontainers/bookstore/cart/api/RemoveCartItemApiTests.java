@@ -55,19 +55,6 @@ class RemoveCartItemApiTests extends AbstractIntegrationTest {
     }
 
     @Test
-    void should404NonExistentProductRemoveItemFromCart() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
-        )));
-        given()
-          .when()
-          .delete("/api/carts/items/{code}?cartId={cartId}", "not-existing", cartId)
-          .then()
-          .statusCode(404);
-    }
-
-    @Test
     void shouldIgnoreDeletingNonExistentProductRemoveItemFromCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -75,7 +62,7 @@ class RemoveCartItemApiTests extends AbstractIntegrationTest {
         )));
         given()
           .when()
-          .delete("/api/carts/items/{code}?cartId={cartId}", "P100", "non-existent")
+          .delete("/api/carts/items/{code}?cartId={cartId}", "non-existing-productCode", cartId)
           .then()
           .statusCode(200)
           .body("id", is(cartId))
@@ -112,18 +99,5 @@ class RemoveCartItemApiTests extends AbstractIntegrationTest {
           .statusCode(200)
           .body("id", is(cartId))
           .body("items", hasSize(1));
-    }
-
-    @Test
-    void should404NonExistentCartRemoveItemFromCart2() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
-        )));
-        given()
-          .when()
-          .delete("/api/carts/items/{code}?cartId={cartId}", "P100", "non-existent")
-          .then()
-          .statusCode(404);
     }
 }

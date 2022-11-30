@@ -21,7 +21,7 @@ public class OrderDeliveredEventHandler {
         this.notificationService = notificationService;
     }
 
-    @KafkaListener(topics = "${app.delivered-orders-topic}", groupId = "bookstore")
+    @KafkaListener(topics = "${app.delivered-orders-topic}")
     public void handle(OrderDeliveredEvent event) {
         log.info("Received a OrderDeliveredEvent with orderId:{}: ", event.getOrderId());
         Order order = orderService.findOrderByOrderId(event.getOrderId()).orElse(null);
