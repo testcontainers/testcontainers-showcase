@@ -9,5 +9,6 @@ workflows:
           executor:
             name: maven/default
             tag: "17.0"
+          command: 'verify -DforkCount=4'
           pre-steps:
             - tcc/setup
