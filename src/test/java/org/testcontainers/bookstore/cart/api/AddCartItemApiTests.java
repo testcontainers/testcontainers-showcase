@@ -28,7 +28,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
     private CartRepository cartRepository;
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     public void shouldAddItemToNewCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -50,7 +50,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldAddItemToExistingCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of()));
@@ -76,7 +76,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetNotFoundWhenAddItemToNonExistingCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -95,7 +95,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetNotFoundWhenAddInvalidItemToCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -114,7 +114,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldAddItemIncreaseQuantityWhenAddingSameProduct() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -142,7 +142,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldAddDifferentProduct() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(

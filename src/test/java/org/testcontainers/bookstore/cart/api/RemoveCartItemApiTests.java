@@ -29,7 +29,7 @@ public class RemoveCartItemApiTests extends AbstractIntegrationTest {
     private CartRepository cartRepository;
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldRemoveItemFromCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -46,7 +46,7 @@ public class RemoveCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldIgnoreDeletingNonExistentProductRemoveItemFromCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(

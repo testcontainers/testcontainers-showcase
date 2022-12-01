@@ -39,14 +39,14 @@ class ProductRepositoryTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetAllProducts() {
         List<Product> products = productRepository.findAll();
         assertThat(products).hasSize(2);
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetProductByCode() {
         Optional<Product> optionalProduct = productRepository.findByCode("P100");
         assertThat(optionalProduct).isNotEmpty();
@@ -57,14 +57,14 @@ class ProductRepositoryTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetAllProducts2() {
         List<Product> products = productRepository.findAll();
         assertThat(products).hasSize(2);
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetProductByCode2() {
         Optional<Product> optionalProduct = productRepository.findByCode("P100");
         assertThat(optionalProduct).isNotEmpty();

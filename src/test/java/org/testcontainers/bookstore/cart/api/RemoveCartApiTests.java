@@ -28,7 +28,7 @@ public class RemoveCartApiTests extends AbstractIntegrationTest {
     private CartRepository cartRepository;
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldRemoveCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(

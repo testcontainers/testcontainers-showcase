@@ -26,7 +26,7 @@ public class GetCartApiTests extends AbstractIntegrationTest {
     private CartRepository cartRepository;
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetNewCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -40,7 +40,7 @@ public class GetCartApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetNotFoundWhenCartIdNotExist() {
         given()
                 .contentType(ContentType.JSON)
@@ -52,7 +52,7 @@ public class GetCartApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldGetExistingCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of()));

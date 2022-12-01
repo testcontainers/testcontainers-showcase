@@ -30,7 +30,7 @@ public class PaymentControllerTest extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldAuthorizePaymentSuccessfully() {
         given()
                 .contentType(ContentType.JSON)
@@ -52,7 +52,7 @@ public class PaymentControllerTest extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldRejectPaymentWhenCVVIsIncorrect() {
         given()
                 .contentType(ContentType.JSON)
@@ -74,7 +74,7 @@ public class PaymentControllerTest extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(1)
+    @RepeatedTest(4)
     void shouldFailWhenMandatoryDataIsMissing() {
         given()
                 .contentType(ContentType.JSON)
