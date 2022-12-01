@@ -38,7 +38,7 @@ class GetOrderApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldCreateOrderSuccessfully() {
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
         createOrderRequest.setCustomerName("Siva");
@@ -70,7 +70,7 @@ class GetOrderApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldReturnNotFoundWhenOrderIdNotExist() {
         given()
                 .when()

@@ -40,7 +40,7 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldUpdateItemQuantity() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -67,7 +67,7 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void notFoundOnNonExistingCartUpdate() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -90,7 +90,7 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void notFoundOnNonExistingProductsInCartQuantity() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -113,7 +113,7 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void updatesOnlyOneProductInCartQuantity() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -149,7 +149,7 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldRemoveItemWhenUpdatedItemQuantityIsZero() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(

@@ -43,7 +43,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldCreateOrderSuccessfully() {
         OrderConfirmationDTO orderConfirmationDTO = given()
                 .contentType(ContentType.JSON)
@@ -88,7 +88,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldCreateOrderWithErrorStatusWhenPaymentRejected() {
         given()
                 .contentType(ContentType.JSON)
@@ -128,7 +128,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldReturnBadRequestWhenMandatoryDataIsMissing() {
         given()
                 .contentType(ContentType.JSON)
@@ -158,7 +158,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldCancelOrderWhenCanNotBeDelivered() {
         OrderConfirmationDTO orderConfirmationDTO = given()
                 .contentType(ContentType.JSON)

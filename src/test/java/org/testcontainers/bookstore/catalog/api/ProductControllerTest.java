@@ -51,7 +51,7 @@ class ProductControllerTest extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldGetAllProducts() {
         mockGetPromotions();
 
@@ -72,7 +72,7 @@ class ProductControllerTest extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldGetProductByCode() {
         mockGetPromotion("P100", new BigDecimal("2.5"));
         given()
@@ -89,7 +89,7 @@ class ProductControllerTest extends AbstractIntegrationTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldReturnNotFoundWhenProductCodeNotExists() {
         given()
                 .contentType(ContentType.JSON)

@@ -37,14 +37,14 @@ class CreditCardRepositoryTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldGetAllProducts() {
         List<CreditCard> creditCards = creditCardRepository.findAll();
         assertThat(creditCards).hasSize(2);
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldGetCreditCardByCardNumber() {
         Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber("1111222233334444");
         assertThat(optionalCreditCard).isNotEmpty();
@@ -55,7 +55,7 @@ class CreditCardRepositoryTest {
     }
 
     //@Test
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     void shouldReturnEmptyWhenCardNumberNotFound() {
         Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber("1111111111111");
         assertThat(optionalCreditCard).isEmpty();
