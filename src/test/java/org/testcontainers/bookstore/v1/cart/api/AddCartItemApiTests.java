@@ -1,5 +1,7 @@
 package org.testcontainers.bookstore.v1.cart.api;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartItem;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.redpanda.RedpandaContainer;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -22,7 +26,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-class AddCartItemApiTests extends AbstractIntegrationTest {
+public class AddCartItemApiTests extends AbstractIntegrationTest {
+
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -42,7 +47,7 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
 
     //@Test
     @RepeatedTest(10)
-    void shouldAddItemToNewCart() {
+    public void shouldAddItemToNewCart() {
         given()
                 .contentType(ContentType.JSON)
                 .body(

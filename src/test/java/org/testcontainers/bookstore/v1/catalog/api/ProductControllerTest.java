@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.is;
 })
 class ProductControllerTest extends AbstractIntegrationTest {
 
-
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
         overridePropertiesInternal(registry);
@@ -97,5 +96,4 @@ class ProductControllerTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(404);
     }
-
 }

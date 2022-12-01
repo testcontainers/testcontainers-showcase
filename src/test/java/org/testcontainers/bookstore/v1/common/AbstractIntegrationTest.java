@@ -1,7 +1,10 @@
 package org.testcontainers.bookstore.v1.common;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +18,7 @@ import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.math.BigDecimal;
+import java.util.function.Supplier;
 
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -22,12 +26,12 @@ import static org.mockserver.model.JsonBody.json;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractIntegrationTest {
 
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
     protected static final MongoDBContainer mongodb = new MongoDBContainer("mongo:4.2");
-    protected static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
-    //protected static final RedpandaContainer kafka = new RedpandaContainer("docker.redpanda.com/vectorized/redpanda:v22.2.1");
+    protected static GenericContainer<?> kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
     protected static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0.5-alpine")).withExposedPorts(6379);
     protected static final MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
 
@@ -35,12 +39,6 @@ public abstract class AbstractIntegrationTest {
 
     @MockBean
     protected NotificationService notificationService;
-
-    @BeforeAll
-    static void beforeAll() {
-        Startables.deepStart(mongodb, postgres, redis, kafka, mockServer).join();
-
-    }
 
     @AfterAll
     static void afterAll() {
@@ -52,15 +50,26 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected static void overridePropertiesInternal(DynamicPropertyRegistry registry) {
+        Startables.deepStart(mongodb, postgres, redis, kafka, mockServer).join();
+
         registry.add("spring.data.mongodb.uri", mongodb::getReplicaSetUrl);
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.data.redis.host", redis::getHost);
         registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
+        registry.add("spring.kafka.bootstrap-servers", getBootstrapUrl());
         registry.add("app.promotion-service-url", mockServer::getEndpoint);
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
+    }
+
+    @NotNull
+    private static Supplier<Object> getBootstrapUrl() {
+        if(kafka instanceof KafkaContainer kafkaContainer)
+            return () -> kafkaContainer.getBootstrapServers();
+        if(kafka instanceof RedpandaContainer redpanda)
+            return () -> redpanda.getBootstrapServers();
+        else throw new RuntimeException("Unknown Kafka");
     }
 
     protected static void mockGetPromotions() {

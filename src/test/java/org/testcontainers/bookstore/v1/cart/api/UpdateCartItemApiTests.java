@@ -174,7 +174,6 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-
     @Test
     void shouldUpdateItemQuantity2() {
         String cartId = UUID.randomUUID().toString();
