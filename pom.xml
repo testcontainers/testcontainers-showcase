@@ -144,7 +144,7 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>toxiproxy</artifactId>
+            <artifactId>redpanda</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -11,6 +11,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.bookstore.notifications.NotificationService;
 import org.testcontainers.containers.*;
 import org.testcontainers.lifecycle.Startables;
+import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.math.BigDecimal;
@@ -25,7 +26,8 @@ public abstract class AbstractIntegrationTest {
 
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
     protected static final MongoDBContainer mongodb = new MongoDBContainer("mongo:4.2");
-    protected static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
+    //protected static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
+    protected static final RedpandaContainer kafka = new RedpandaContainer("docker.redpanda.com/vectorized/redpanda:v22.2.1");
     protected static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0.5-alpine")).withExposedPorts(6379);
     protected static final MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
 
@@ -47,7 +49,6 @@ public abstract class AbstractIntegrationTest {
         redis.stop();
         postgres.stop();
         mongodb.stop();
-        //toxi.stop();
     }
 
     protected static void overridePropertiesInternal(DynamicPropertyRegistry registry) {
