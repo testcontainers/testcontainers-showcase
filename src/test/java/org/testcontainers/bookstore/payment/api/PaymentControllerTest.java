@@ -1,5 +1,6 @@
 package org.testcontainers.bookstore.payment.api;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.payment.domain.CreditCard;
 import org.testcontainers.bookstore.payment.domain.CreditCardRepository;
@@ -35,7 +36,8 @@ class PaymentControllerTest extends AbstractIntegrationTest {
         creditCardRepository.save( new CreditCard(null, "Siva", "1111222233334444", "123", 2, 2025));
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldAuthorizePaymentSuccessfully() {
         given()
                 .contentType(ContentType.JSON)
@@ -56,7 +58,8 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .body("status", is("ACCEPTED"));
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldRejectPaymentWhenCVVIsIncorrect() {
         given()
                 .contentType(ContentType.JSON)
@@ -77,7 +80,8 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .body("status", is("REJECTED"));
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldFailWhenMandatoryDataIsMissing() {
         given()
                 .contentType(ContentType.JSON)
@@ -93,65 +97,5 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .post("/api/payments/authorize")
                 .then()
                 .statusCode(400);
-    }
-
-    @Test
-    void shouldAuthorizePaymentSuccessfully2() {
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "cardNumber": "1111222233334444",
-                "cvv": "123",
-                "expiryMonth": 2,
-                "expiryYear": 2025
-            }
-            """
-          )
-          .when()
-          .post("/api/payments/authorize")
-          .then()
-          .statusCode(200)
-          .body("status", is("ACCEPTED"));
-    }
-
-    @Test
-    void shouldRejectPaymentWhenCVVIsIncorrect2() {
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "cardNumber": "1111222233334444",
-                "cvv": "111",
-                "expiryMonth": 2,
-                "expiryYear": 2024
-            }
-            """
-          )
-          .when()
-          .post("/api/payments/authorize")
-          .then()
-          .statusCode(200)
-          .body("status", is("REJECTED"));
-    }
-
-    @Test
-    void shouldFailWhenMandatoryDataIsMissing2() {
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "cardNumber": "1111222233334444",
-                "cvv": "111"
-            }
-            """
-          )
-          .when()
-          .post("/api/payments/authorize")
-          .then()
-          .statusCode(400);
     }
 }

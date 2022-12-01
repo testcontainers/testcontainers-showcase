@@ -1,6 +1,7 @@
 package org.testcontainers.bookstore.catalog.domain;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -40,13 +41,15 @@ class ProductRepositoryTest {
         productRepository.save(new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24)));
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(10)
     void shouldGetAllProducts() {
         List<Product> products = productRepository.findAll();
         assertThat(products).hasSize(2);
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(10)
     void shouldGetProductByCode() {
         Optional<Product> optionalProduct = productRepository.findByCode("P100");
         assertThat(optionalProduct).isNotEmpty();
@@ -56,13 +59,15 @@ class ProductRepositoryTest {
         assertThat(optionalProduct.get().getPrice()).isEqualTo(BigDecimal.TEN);
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(10)
     void shouldGetAllProducts2() {
         List<Product> products = productRepository.findAll();
         assertThat(products).hasSize(2);
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(10)
     void shouldGetProductByCode2() {
         Optional<Product> optionalProduct = productRepository.findByCode("P100");
         assertThat(optionalProduct).isNotEmpty();

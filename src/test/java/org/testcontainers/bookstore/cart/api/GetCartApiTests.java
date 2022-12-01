@@ -1,5 +1,6 @@
 package org.testcontainers.bookstore.cart.api;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartRepository;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
@@ -37,7 +38,8 @@ class GetCartApiTests extends AbstractIntegrationTest {
         RestAssured.baseURI = "http://localhost:" + port;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldGetNewCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -50,7 +52,8 @@ class GetCartApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldGetNotFoundWhenCartIdNotExist() {
         given()
                 .contentType(ContentType.JSON)
@@ -61,7 +64,8 @@ class GetCartApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldGetExistingCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of()));

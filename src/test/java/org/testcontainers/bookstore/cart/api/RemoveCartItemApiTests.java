@@ -1,5 +1,6 @@
 package org.testcontainers.bookstore.cart.api;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartItem;
 import org.testcontainers.bookstore.cart.domain.CartRepository;
@@ -38,7 +39,8 @@ class RemoveCartItemApiTests extends AbstractIntegrationTest {
         RestAssured.baseURI = "http://localhost:" + port;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldRemoveItemFromCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -54,7 +56,8 @@ class RemoveCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldIgnoreDeletingNonExistentProductRemoveItemFromCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(

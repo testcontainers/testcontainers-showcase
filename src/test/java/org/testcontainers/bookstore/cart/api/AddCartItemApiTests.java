@@ -1,5 +1,6 @@
 package org.testcontainers.bookstore.cart.api;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartItem;
 import org.testcontainers.bookstore.cart.domain.CartRepository;
@@ -40,7 +41,8 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
         RestAssured.baseURI = "http://localhost:" + port;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldAddItemToNewCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -61,7 +63,8 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
                 ;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldAddItemToExistingCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of()));
@@ -86,7 +89,8 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldGetNotFoundWhenAddItemToNonExistingCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -104,7 +108,8 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
                 .statusCode(404);
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldGetNotFoundWhenAddInvalidItemToCart() {
         given()
                 .contentType(ContentType.JSON)
@@ -122,7 +127,8 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
                 .statusCode(404);
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldAddItemIncreaseQuantityWhenAddingSameProduct() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -149,7 +155,8 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldAddDifferentProduct() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -174,139 +181,4 @@ class AddCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-
-
-    @Test
-    void shouldAddItemToNewCart2() {
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "productCode": "P100",
-                "quantity": 2
-            }
-            """
-          )
-          .when()
-          .post("/api/carts")
-          .then()
-          .statusCode(200)
-          .body("id", notNullValue())
-          .body("items", hasSize(1))
-        ;
-    }
-
-    @Test
-    void shouldAddItemToExistingCart2() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of()));
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "productCode": "P100",
-                "quantity": 2
-            }
-            """
-          )
-          .when()
-          .post("/api/carts?cartId={cartId}", cartId)
-          .then()
-          .statusCode(200)
-          .body("id", is(cartId))
-          .body("items", hasSize(1))
-          .body("items[0].productCode", is("P100"))
-          .body("items[0].quantity", is(2))
-        ;
-    }
-
-    @Test
-    void shouldGetNotFoundWhenAddItemToNonExistingCart2() {
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "productCode": "P100",
-                "quantity": 2
-            }
-            """
-          )
-          .when()
-          .post("/api/carts?cartId={cartId}", "non-existing-cart-id")
-          .then()
-          .statusCode(404);
-    }
-
-    @Test
-    void shouldGetNotFoundWhenAddInvalidItemToCart2() {
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "productCode": "non-existing-product-id",
-                "quantity": 2
-            }
-            """
-          )
-          .when()
-          .post("/api/carts")
-          .then()
-          .statusCode(404);
-    }
-
-    @Test
-    void shouldAddItemIncreaseQuantityWhenAddingSameProduct2() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
-        )));
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "productCode": "P100",
-                "quantity": 1
-            }
-            """
-          )
-          .when()
-          .post("/api/carts?cartId={cartId}", cartId)
-          .then()
-          .statusCode(200)
-          .body("id", is(cartId))
-          .body("items", hasSize(1))
-          .body("items[0].productCode", is("P100"))
-          .body("items[0].quantity", is(3))
-        ;
-    }
-
-    @Test
-    void shouldAddDifferentProduct2() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
-        )));
-        given()
-          .contentType(ContentType.JSON)
-          .body(
-            """
-            {
-                "productCode": "P101",
-                "quantity": 1
-            }
-            """
-          )
-          .when()
-          .post("/api/carts?cartId={cartId}", cartId)
-          .then()
-          .statusCode(200)
-          .body("id", is(cartId))
-          .body("items", hasSize(2))
-        ;
-    }
 }

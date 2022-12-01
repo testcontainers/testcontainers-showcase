@@ -1,6 +1,7 @@
 package org.testcontainers.bookstore.cart.api;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartItem;
 import org.testcontainers.bookstore.cart.domain.CartRepository;
@@ -38,7 +39,8 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
         RestAssured.baseURI = "http://localhost:" + port;
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldUpdateItemQuantity() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -64,8 +66,9 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
                 .body("items[0].quantity", is(4));
     }
 
-    @Test
-    void notFoundOnNonexistingCartUpdate() {
+    //@Test
+    @RepeatedTest(5)
+    void notFoundOnNonExistingCartUpdate() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
           new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
@@ -86,8 +89,9 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
           .statusCode(404);
     }
 
-    @Test
-    void notFoundOnNonexistingProductsInCartQuantity() {
+    //@Test
+    @RepeatedTest(5)
+    void notFoundOnNonExistingProductsInCartQuantity() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
           new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
@@ -108,7 +112,8 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
           .statusCode(404);
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void updatesOnlyOneProductInCartQuantity() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
@@ -143,7 +148,8 @@ class UpdateCartItemApiTests extends AbstractIntegrationTest {
         Assertions.assertThat(returnedItems.get(1).getQuantity()).isEqualTo(5);
     }
 
-    @Test
+    //@Test
+    @RepeatedTest(5)
     void shouldRemoveItemWhenUpdatedItemQuantityIsZero() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
