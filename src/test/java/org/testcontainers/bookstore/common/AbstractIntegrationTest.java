@@ -76,12 +76,6 @@ public abstract class AbstractIntegrationTest {
 
     @AfterAll
     static void afterAllBase() {
-        /*try {
-            //grace period to let the current on-going requests to finish
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }*/
         mockServer.stop();
         kafka.stop();
         redis.stop();
