@@ -34,38 +34,20 @@ class ProductRepositoryTest {
     void setUp() {
         productRepository.deleteAll();
 
-        productRepository.save( new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN));
+        productRepository.save(new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN));
         productRepository.save(new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24)));
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldGetAllProducts() {
         List<Product> products = productRepository.findAll();
         assertThat(products).hasSize(2);
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldGetProductByCode() {
-        Optional<Product> optionalProduct = productRepository.findByCode("P100");
-        assertThat(optionalProduct).isNotEmpty();
-        assertThat(optionalProduct.get().getCode()).isEqualTo("P100");
-        assertThat(optionalProduct.get().getName()).isEqualTo("Product 1");
-        assertThat(optionalProduct.get().getDescription()).isEqualTo("Product 1 desc");
-        assertThat(optionalProduct.get().getPrice()).isEqualTo(BigDecimal.TEN);
-    }
-
-    //@Test
-    @RepeatedTest(4)
-    void shouldGetAllProducts2() {
-        List<Product> products = productRepository.findAll();
-        assertThat(products).hasSize(2);
-    }
-
-    //@Test
-    @RepeatedTest(4)
-    void shouldGetProductByCode2() {
         Optional<Product> optionalProduct = productRepository.findByCode("P100");
         assertThat(optionalProduct).isNotEmpty();
         assertThat(optionalProduct.get().getCode()).isEqualTo("P100");

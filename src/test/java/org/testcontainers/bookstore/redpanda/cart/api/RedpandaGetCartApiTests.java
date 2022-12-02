@@ -11,6 +11,7 @@ public class RedpandaGetCartApiTests extends GetCartApiTests {
     static void setupKafka() {
         kafka = new RedpandaContainer("docker.redpanda.com/vectorized/redpanda:v22.2.1");
     }
+
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
         overridePropertiesInternal(registry);

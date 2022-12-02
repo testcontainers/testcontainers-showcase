@@ -25,7 +25,6 @@ public class GetOrderApiTests extends AbstractIntegrationTest {
     @Autowired
     private OrderService orderService;
 
-    //@Test
     @RepeatedTest(4)
     void shouldCreateOrderSuccessfully() {
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
@@ -57,7 +56,7 @@ public class GetOrderApiTests extends AbstractIntegrationTest {
         assertThat(orderDTO.getItems()).hasSize(1);
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldReturnNotFoundWhenOrderIdNotExist() {
         given()

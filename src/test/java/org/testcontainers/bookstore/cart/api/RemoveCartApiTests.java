@@ -1,7 +1,6 @@
 package org.testcontainers.bookstore.cart.api;
 
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -27,7 +26,7 @@ public class RemoveCartApiTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldRemoveCart() {
         String cartId = UUID.randomUUID().toString();
@@ -39,20 +38,6 @@ public class RemoveCartApiTests extends AbstractIntegrationTest {
                 .delete("/api/carts?cartId={cartId}", cartId)
                 .then()
                 .statusCode(200);
-        assertThat(cartRepository.findById(cartId)).isEmpty();
-    }
-
-    @Test
-    void shouldRemoveCart2() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
-        )));
-        given()
-          .when()
-          .delete("/api/carts?cartId={cartId}", cartId)
-          .then()
-          .statusCode(200);
         assertThat(cartRepository.findById(cartId)).isEmpty();
     }
 }

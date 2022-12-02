@@ -6,18 +6,24 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
+import org.testcontainers.bookstore.catalog.domain.Product;
+import org.testcontainers.bookstore.catalog.domain.ProductRepository;
 import org.testcontainers.bookstore.notifications.NotificationService;
+import org.testcontainers.bookstore.payment.domain.CreditCard;
+import org.testcontainers.bookstore.payment.domain.CreditCardRepository;
 import org.testcontainers.containers.*;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static org.mockserver.model.HttpRequest.request;
@@ -26,7 +32,6 @@ import static org.mockserver.model.JsonBody.json;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractIntegrationTest {
 
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
@@ -37,19 +42,46 @@ public abstract class AbstractIntegrationTest {
 
     protected static MockServerClient mockServerClient;
 
+    @Autowired
+    protected ProductRepository productRepository;
+
+    @Autowired
+    private CreditCardRepository creditCardRepository;
+
     @MockBean
     protected NotificationService notificationService;
 
     @LocalServerPort
     private Integer port;
 
+    protected List<Product> products = List.of(
+            new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN),
+            new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24))
+    );
+    protected List<CreditCard> creditCards = List.of(
+            new CreditCard(null, "John", "1111222233334444", "123", 2, 2030),
+            new CreditCard(null, "Siva", "1234123412341234", "123", 10, 2030),
+            new CreditCard(null, "Kevin", "1234567890123456", "123", 3, 2030)
+    );
+
     @BeforeEach
     void setUpBase() {
         RestAssured.baseURI = "http://localhost:" + port;
+        productRepository.deleteAll();
+        productRepository.saveAll(products);
+
+        creditCardRepository.deleteAllInBatch();
+        creditCardRepository.saveAll(creditCards);
     }
 
     @AfterAll
     static void afterAllBase() {
+        /*try {
+            //grace period to let the current on-going requests to finish
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }*/
         mockServer.stop();
         kafka.stop();
         redis.stop();
@@ -73,10 +105,10 @@ public abstract class AbstractIntegrationTest {
 
     @NotNull
     private static Supplier<Object> getBootstrapUrl() {
-        if(kafka instanceof KafkaContainer kafkaContainer)
-            return () -> kafkaContainer.getBootstrapServers();
-        if(kafka instanceof RedpandaContainer redpanda)
-            return () -> redpanda.getBootstrapServers();
+        if (kafka instanceof KafkaContainer kafkaContainer)
+            return kafkaContainer::getBootstrapServers;
+        if (kafka instanceof RedpandaContainer redpanda)
+            return redpanda::getBootstrapServers;
         else throw new RuntimeException("Unknown Kafka");
     }
 
@@ -113,11 +145,11 @@ public abstract class AbstractIntegrationTest {
                                 .withHeaders(new Header("Content-Type", "application/json; charset=utf-8"))
                                 .withBody(json(
                                         """
-                                            {
-                                                "productCode": "%s",
-                                                "discount": %f
-                                            }
-                                        """.formatted(productCode, discount.doubleValue())
+                                                    {
+                                                        "productCode": "%s",
+                                                        "discount": %f
+                                                    }
+                                                """.formatted(productCode, discount.doubleValue())
                                 ))
                 );
     }

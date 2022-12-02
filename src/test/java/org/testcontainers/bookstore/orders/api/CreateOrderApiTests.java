@@ -30,7 +30,6 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
     @Autowired
     private OrderService orderService;
 
-    //@Test
     @RepeatedTest(4)
     void shouldCreateOrderSuccessfully() {
         OrderConfirmationDTO orderConfirmationDTO = given()
@@ -69,42 +68,41 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                 .body("orderStatus", is("NEW"))
                 .extract().body().as(OrderConfirmationDTO.class);
 
-        await().pollInterval(Duration.ofSeconds(5)).atMost(20, SECONDS).until(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).until(() -> {
             Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
             return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.DELIVERED;
         });
     }
 
-    //@Test
     @RepeatedTest(4)
     void shouldCreateOrderWithErrorStatusWhenPaymentRejected() {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "customerName": "Siva",
-                            "customerEmail": "siva@gmail.com",
-                            "deliveryAddressLine1": "Birkelweg",
-                            "deliveryAddressLine2": "Hans-Edenhofer-Straße 23",
-                            "deliveryAddressCity": "Berlin",
-                            "deliveryAddressState": "Berlin",
-                            "deliveryAddressZipCode": "94258",
-                            "deliveryAddressCountry": "Germany",
-                            "cardNumber": "1111222233334444",
-                            "cvv": "345",
-                            "expiryMonth": 2,
-                            "expiryYear": 2024,
-                            "items": [
                                 {
-                                    "productCode": "P100",
-                                    "productName": "Product 1",
-                                    "productPrice": 25.50,
-                                    "quantity": 1
+                                    "customerName": "Siva",
+                                    "customerEmail": "siva@gmail.com",
+                                    "deliveryAddressLine1": "Birkelweg",
+                                    "deliveryAddressLine2": "Hans-Edenhofer-Straße 23",
+                                    "deliveryAddressCity": "Berlin",
+                                    "deliveryAddressState": "Berlin",
+                                    "deliveryAddressZipCode": "94258",
+                                    "deliveryAddressCountry": "Germany",
+                                    "cardNumber": "1111222233334444",
+                                    "cvv": "345",
+                                    "expiryMonth": 2,
+                                    "expiryYear": 2024,
+                                    "items": [
+                                        {
+                                            "productCode": "P100",
+                                            "productName": "Product 1",
+                                            "productPrice": 25.50,
+                                            "quantity": 1
+                                        }
+                                    ]
                                 }
-                            ]
-                        }
-                        """
+                                """
                 )
                 .when()
                 .post("/api/orders")
@@ -115,28 +113,27 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    //@Test
     @RepeatedTest(4)
     void shouldReturnBadRequestWhenMandatoryDataIsMissing() {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "cardNumber": "1111222233334444",
-                            "cvv": "345",
-                            "expiryMonth": 2,
-                            "expiryYear": 2024,
-                            "items": [
                                 {
-                                    "productCode": "P100",
-                                    "productName": "Product 1",
-                                    "productPrice": 25.50,
-                                    "quantity": 1
+                                    "cardNumber": "1111222233334444",
+                                    "cvv": "345",
+                                    "expiryMonth": 2,
+                                    "expiryYear": 2024,
+                                    "items": [
+                                        {
+                                            "productCode": "P100",
+                                            "productName": "Product 1",
+                                            "productPrice": 25.50,
+                                            "quantity": 1
+                                        }
+                                    ]
                                 }
-                            ]
-                        }
-                        """
+                                """
                 )
                 .when()
                 .post("/api/orders")
@@ -145,7 +142,6 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    //@Test
     @RepeatedTest(4)
     void shouldCancelOrderWhenCanNotBeDelivered() {
         OrderConfirmationDTO orderConfirmationDTO = given()
@@ -184,7 +180,7 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                 .body("orderStatus", is("NEW"))
                 .extract().body().as(OrderConfirmationDTO.class);
 
-        await().atMost(15, SECONDS).until(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).until(() -> {
             Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
             return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.CANCELLED;
         });

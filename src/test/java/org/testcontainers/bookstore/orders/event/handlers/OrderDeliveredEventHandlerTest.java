@@ -13,6 +13,7 @@ import org.testcontainers.bookstore.events.OrderDeliveredEvent;
 import org.testcontainers.bookstore.orders.domain.OrderRepository;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -33,7 +34,7 @@ public class OrderDeliveredEventHandlerTest extends AbstractIntegrationTest {
     private OrderRepository orderRepository;
 
     @Autowired
-    private KafkaTemplate<String,Object> kafkaTemplate;
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
     private ApplicationProperties properties;
@@ -55,7 +56,7 @@ public class OrderDeliveredEventHandlerTest extends AbstractIntegrationTest {
         log.info("Delivered OrderId: {}", order.getOrderId());
         kafkaTemplate.send(properties.deliveredOrdersTopic(), new OrderDeliveredEvent(order.getOrderId()));
 
-        await().atMost(30, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService).sendDeliveredNotification(any(Order.class));
         });
 
@@ -67,41 +68,7 @@ public class OrderDeliveredEventHandlerTest extends AbstractIntegrationTest {
         log.info("Delivered OrderId: {}", orderId);
         kafkaTemplate.send(properties.deliveredOrdersTopic(), new OrderDeliveredEvent(orderId));
 
-        await().atMost(10, SECONDS).untilAsserted(() -> {
-            verify(notificationService, never()).sendDeliveredNotification(any(Order.class));
-        });
-
-    }
-
-
-    @Test
-    void shouldHandleOrderDeliveredEvent2() {
-        Order order = new Order();
-        order.setOrderId(UUID.randomUUID().toString());
-        order.setCustomerName("Siva");
-        order.setCustomerEmail("siva@gmail.com");
-        order.setDeliveryAddressLine1("addr line 1");
-        order.setDeliveryAddressLine2("addr line 2");
-        order.setDeliveryAddressCity("Hyderabad");
-        order.setDeliveryAddressState("Telangana");
-        order.setDeliveryAddressZipCode("500072");
-        order.setDeliveryAddressCountry("India");
-
-        orderRepository.saveAndFlush(order);
-
-        kafkaTemplate.send(properties.deliveredOrdersTopic(), new OrderDeliveredEvent(order.getOrderId()));
-
-        await().atMost(10, SECONDS).untilAsserted(() -> {
-            verify(notificationService).sendDeliveredNotification(any(Order.class));
-        });
-
-    }
-
-    @Test
-    void shouldIgnoreOrderDeliveredEventWhenOrderNotFound2() {
-        kafkaTemplate.send(properties.deliveredOrdersTopic(), new OrderDeliveredEvent("non-existing-order_id"));
-
-        await().atMost(5, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService, never()).sendDeliveredNotification(any(Order.class));
         });
 

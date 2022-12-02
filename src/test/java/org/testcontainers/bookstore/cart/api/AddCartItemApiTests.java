@@ -27,18 +27,17 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
-    //@Test
     @RepeatedTest(4)
     public void shouldAddItemToNewCart() {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "productCode": "P100",
-                            "quantity": 2
-                        }
-                        """
+                                {
+                                    "productCode": "P100",
+                                    "quantity": 2
+                                }
+                                """
                 )
                 .when()
                 .post("/api/carts")
@@ -46,10 +45,10 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
                 .statusCode(200)
                 .body("id", notNullValue())
                 .body("items", hasSize(1))
-                ;
+        ;
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldAddItemToExistingCart() {
         String cartId = UUID.randomUUID().toString();
@@ -58,11 +57,11 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "productCode": "P100",
-                            "quantity": 2
-                        }
-                        """
+                                {
+                                    "productCode": "P100",
+                                    "quantity": 2
+                                }
+                                """
                 )
                 .when()
                 .post("/api/carts?cartId={cartId}", cartId)
@@ -75,18 +74,18 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldGetNotFoundWhenAddItemToNonExistingCart() {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "productCode": "P100",
-                            "quantity": 2
-                        }
-                        """
+                                {
+                                    "productCode": "P100",
+                                    "quantity": 2
+                                }
+                                """
                 )
                 .when()
                 .post("/api/carts?cartId={cartId}", "non-existing-cart-id")
@@ -94,18 +93,18 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
                 .statusCode(404);
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldGetNotFoundWhenAddInvalidItemToCart() {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "productCode": "non-existing-product-id",
-                            "quantity": 2
-                        }
-                        """
+                                {
+                                    "productCode": "non-existing-product-id",
+                                    "quantity": 2
+                                }
+                                """
                 )
                 .when()
                 .post("/api/carts")
@@ -113,7 +112,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
                 .statusCode(404);
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldAddItemIncreaseQuantityWhenAddingSameProduct() {
         String cartId = UUID.randomUUID().toString();
@@ -124,11 +123,11 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "productCode": "P100",
-                            "quantity": 1
-                        }
-                        """
+                                {
+                                    "productCode": "P100",
+                                    "quantity": 1
+                                }
+                                """
                 )
                 .when()
                 .post("/api/carts?cartId={cartId}", cartId)
@@ -141,7 +140,7 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldAddDifferentProduct() {
         String cartId = UUID.randomUUID().toString();
@@ -152,11 +151,11 @@ public class AddCartItemApiTests extends AbstractIntegrationTest {
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "productCode": "P101",
-                            "quantity": 1
-                        }
-                        """
+                                {
+                                    "productCode": "P101",
+                                    "quantity": 1
+                                }
+                                """
                 )
                 .when()
                 .post("/api/carts?cartId={cartId}", cartId)

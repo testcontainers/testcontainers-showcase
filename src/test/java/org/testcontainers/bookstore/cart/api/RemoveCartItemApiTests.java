@@ -1,7 +1,6 @@
 package org.testcontainers.bookstore.cart.api;
 
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -28,7 +27,7 @@ public class RemoveCartItemApiTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldRemoveItemFromCart() {
         String cartId = UUID.randomUUID().toString();
@@ -45,51 +44,19 @@ public class RemoveCartItemApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldIgnoreDeletingNonExistentProductRemoveItemFromCart() {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
+                new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
         )));
         given()
-          .when()
-          .delete("/api/carts/items/{code}?cartId={cartId}", "non-existing-productCode", cartId)
-          .then()
-          .statusCode(200)
-          .body("id", is(cartId))
-          .body("items", hasSize(1));
-    }
-
-
-    @Test
-    void shouldRemoveItemFromCart2() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
-        )));
-        given()
-          .when()
-          .delete("/api/carts/items/{code}?cartId={cartId}", "P100", cartId)
-          .then()
-          .statusCode(200)
-          .body("id", is(cartId))
-          .body("items", hasSize(0))
-        ;
-    }
-
-    @Test
-    void shouldIgnoreDeletingNonExistentProductRemoveItemFromCart2() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
-          new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
-        )));
-        given()
-          .when()
-          .delete("/api/carts/items/{code}?cartId={cartId}", "not-existing", cartId)
-          .then()
-          .statusCode(200)
-          .body("id", is(cartId))
-          .body("items", hasSize(1));
+                .when()
+                .delete("/api/carts/items/{code}?cartId={cartId}", "non-existing-productCode", cartId)
+                .then()
+                .statusCode(200)
+                .body("id", is(cartId))
+                .body("items", hasSize(1));
     }
 }

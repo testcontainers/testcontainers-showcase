@@ -1,26 +1,17 @@
 package org.testcontainers.bookstore.catalog.api;
 
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
-import org.testcontainers.bookstore.catalog.domain.Product;
-import org.testcontainers.bookstore.catalog.domain.ProductRepository;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-@TestPropertySource(properties = {
-    "app.promotion-service-type=remote"
-})
 public class ProductControllerTest extends AbstractIntegrationTest {
 
     @DynamicPropertySource
@@ -28,21 +19,6 @@ public class ProductControllerTest extends AbstractIntegrationTest {
         overridePropertiesInternal(registry);
     }
 
-    @Autowired
-    private ProductRepository productRepository;
-
-    private final List<Product> products = List.of(
-            new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN),
-            new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24))
-    );
-
-    @BeforeEach
-    void setUp() {
-        productRepository.deleteAll();
-        productRepository.saveAll(products);
-    }
-
-    //@Test
     @RepeatedTest(4)
     void shouldGetAllProducts() {
         mockGetPromotions();
@@ -63,7 +39,7 @@ public class ProductControllerTest extends AbstractIntegrationTest {
                 .body("hasPrevious", is(false));
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldGetProductByCode() {
         mockGetPromotion("P100", new BigDecimal("2.5"));
@@ -80,7 +56,7 @@ public class ProductControllerTest extends AbstractIntegrationTest {
         ;
     }
 
-    //@Test
+
     @RepeatedTest(4)
     void shouldReturnNotFoundWhenProductCodeNotExists() {
         given()
