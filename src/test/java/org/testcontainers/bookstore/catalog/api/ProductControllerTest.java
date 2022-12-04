@@ -2,6 +2,8 @@ package org.testcontainers.bookstore.catalog.api;
 
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
@@ -57,12 +59,18 @@ public class ProductControllerTest extends AbstractIntegrationTest {
     }
 
 
-    @RepeatedTest(4)
-    void shouldReturnNotFoundWhenProductCodeNotExists() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-product-code-1",
+            "non-existing-product-code-2",
+            "non-existing-product-code-3",
+            "non-existing-product-code-4"
+    })
+    void shouldReturnNotFoundWhenProductCodeNotExists(String productCode) {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/api/products/{code}", "invalid_product_code")
+                .get("/api/products/{code}", productCode)
                 .then()
                 .statusCode(404);
     }

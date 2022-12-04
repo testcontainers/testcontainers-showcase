@@ -1,6 +1,9 @@
 package org.testcontainers.bookstore.orders.api;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -25,8 +28,14 @@ public class GetOrderApiTests extends AbstractIntegrationTest {
     @Autowired
     private OrderService orderService;
 
-    @RepeatedTest(4)
-    void shouldCreateOrderSuccessfully() {
+    @ParameterizedTest
+    @CsvSource({
+            "P100",
+            "P101",
+            "P102",
+            "P103"
+    })
+    void shouldCreateOrderSuccessfully(String productCode) {
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
         createOrderRequest.setCustomerName("Siva");
         createOrderRequest.setCustomerEmail("siva@gmail.com");
@@ -41,7 +50,7 @@ public class GetOrderApiTests extends AbstractIntegrationTest {
         createOrderRequest.setExpiryMonth(10);
         createOrderRequest.setExpiryYear(2025);
         createOrderRequest.setItems(Set.of(
-                new CreateOrderRequest.LineItem("P100", "Product 1", BigDecimal.TEN, 1)
+                new CreateOrderRequest.LineItem(productCode, "Product name", BigDecimal.TEN, 1)
         ));
         OrderConfirmationDTO orderConfirmationDTO = orderService.createOrder(createOrderRequest);
 
@@ -57,11 +66,17 @@ public class GetOrderApiTests extends AbstractIntegrationTest {
     }
 
 
-    @RepeatedTest(4)
-    void shouldReturnNotFoundWhenOrderIdNotExist() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-order-1",
+            "non-existing-order-2",
+            "non-existing-order-3",
+            "non-existing-order-4"
+    })
+    void shouldReturnNotFoundWhenOrderIdNotExist(String orderId) {
         given()
                 .when()
-                .get("/api/orders/{orderId}", "non-existing-order-id")
+                .get("/api/orders/{orderId}", orderId)
                 .then()
                 .statusCode(404);
     }

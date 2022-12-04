@@ -1,7 +1,10 @@
 package org.testcontainers.bookstore.payment.domain;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -34,25 +37,35 @@ class CreditCardRepositoryTest {
         entityManager.persist( new CreditCard(null, "Kevin", "1234567890123456", "123", 3, 2030));
     }
 
-    @RepeatedTest(4)
-    void shouldGetAllProducts() {
+    @Test
+    void shouldGetAllCreditCards() {
         List<CreditCard> creditCards = creditCardRepository.findAll();
         assertThat(creditCards).hasSize(3);
     }
 
-    @RepeatedTest(4)
-    void shouldGetCreditCardByCardNumber() {
-        Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber("1111222233334444");
+    @ParameterizedTest
+    @CsvSource({
+            "1111222233334444, 123, 2, 2030",
+            "1234123412341234, 123, 10, 2030",
+            "1234567890123456, 123, 3, 2030"
+    })
+    void shouldGetCreditCardByCardNumber(String cardNumber, String cvv, int expiryMonth, int expiryYear) {
+        Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber(cardNumber);
         assertThat(optionalCreditCard).isNotEmpty();
-        assertThat(optionalCreditCard.get().getCardNumber()).isEqualTo("1111222233334444");
-        assertThat(optionalCreditCard.get().getCvv()).isEqualTo("123");
-        assertThat(optionalCreditCard.get().getExpiryMonth()).isEqualTo(2);
-        assertThat(optionalCreditCard.get().getExpiryYear()).isEqualTo(2030);
+        assertThat(optionalCreditCard.get().getCardNumber()).isEqualTo(cardNumber);
+        assertThat(optionalCreditCard.get().getCvv()).isEqualTo(cvv);
+        assertThat(optionalCreditCard.get().getExpiryMonth()).isEqualTo(expiryMonth);
+        assertThat(optionalCreditCard.get().getExpiryYear()).isEqualTo(expiryYear);
     }
 
-    @RepeatedTest(4)
-    void shouldReturnEmptyWhenCardNumberNotFound() {
-        Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber("1111111111111");
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "1111111111111111",
+            "2222222222222222",
+            "3333333333333333"
+    })
+    void shouldReturnEmptyWhenCardNumberNotFound(String cardNumber) {
+        Optional<CreditCard> optionalCreditCard = creditCardRepository.findByCardNumber(cardNumber);
         assertThat(optionalCreditCard).isEmpty();
     }
 }

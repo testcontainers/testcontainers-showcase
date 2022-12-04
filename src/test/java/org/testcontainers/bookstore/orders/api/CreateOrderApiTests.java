@@ -1,7 +1,8 @@
 package org.testcontainers.bookstore.orders.api;
 
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -30,8 +31,14 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
     @Autowired
     private OrderService orderService;
 
-    @RepeatedTest(4)
-    void shouldCreateOrderSuccessfully() {
+    @ParameterizedTest
+    @CsvSource({
+            "P100",
+            "P101",
+            "P102",
+            "P103"
+    })
+    void shouldCreateOrderSuccessfully(String productCode) {
         OrderConfirmationDTO orderConfirmationDTO = given()
                 .contentType(ContentType.JSON)
                 .body(
@@ -51,14 +58,14 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                     "expiryYear": 2030,
                                     "items": [
                                         {
-                                            "productCode": "P100",
-                                            "productName": "Product 1",
+                                            "productCode": "%s",
+                                            "productName": "Product name",
                                             "productPrice": 25.50,
                                             "quantity": 1
                                         }
                                     ]
                                 }
-                                """
+                                """.formatted(productCode)
                 )
                 .when()
                 .post("/api/orders")
@@ -74,8 +81,14 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
         });
     }
 
-    @RepeatedTest(4)
-    void shouldCreateOrderWithErrorStatusWhenPaymentRejected() {
+    @ParameterizedTest
+    @CsvSource({
+            "1111111111111",
+            "2222222222222",
+            "3333333333333",
+            "4444444444444"
+    })
+    void shouldCreateOrderWithErrorStatusWhenPaymentRejected(String cardNumber) {
         given()
                 .contentType(ContentType.JSON)
                 .body(
@@ -89,7 +102,7 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                     "deliveryAddressState": "Berlin",
                                     "deliveryAddressZipCode": "94258",
                                     "deliveryAddressCountry": "Germany",
-                                    "cardNumber": "1111222233334444",
+                                    "cardNumber": "%s",
                                     "cvv": "345",
                                     "expiryMonth": 2,
                                     "expiryYear": 2024,
@@ -102,7 +115,7 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """
+                                """.formatted(cardNumber)
                 )
                 .when()
                 .post("/api/orders")
@@ -113,14 +126,20 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @RepeatedTest(4)
-    void shouldReturnBadRequestWhenMandatoryDataIsMissing() {
+    @ParameterizedTest
+    @CsvSource({
+            "1111111111111",
+            "2222222222222",
+            "3333333333333",
+            "4444444444444"
+    })
+    void shouldReturnBadRequestWhenMandatoryDataIsMissing(String cardNumber) {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
                                 {
-                                    "cardNumber": "1111222233334444",
+                                    "cardNumber": "%s",
                                     "cvv": "345",
                                     "expiryMonth": 2,
                                     "expiryYear": 2024,
@@ -133,7 +152,7 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """
+                                """.formatted(cardNumber)
                 )
                 .when()
                 .post("/api/orders")
@@ -142,8 +161,14 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @RepeatedTest(4)
-    void shouldCancelOrderWhenCanNotBeDelivered() {
+    @ParameterizedTest
+    @CsvSource({
+            "Belgium",
+            "Denmark",
+            "Dubai",
+            "Poland"
+    })
+    void shouldCancelOrderWhenCanNotBeDelivered(String country) {
         OrderConfirmationDTO orderConfirmationDTO = given()
                 .contentType(ContentType.JSON)
                 .body(
@@ -156,7 +181,7 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                     "deliveryAddressCity": "Turkey",
                                     "deliveryAddressState": "Turkey",
                                     "deliveryAddressZipCode": "94258",
-                                    "deliveryAddressCountry": "Turkey",
+                                    "deliveryAddressCountry": "%s",
                                     "cardNumber": "1111222233334444",
                                     "cvv": "123",
                                     "expiryMonth": 2,
@@ -170,7 +195,7 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """
+                                """.formatted(country)
                 )
                 .when()
                 .post("/api/orders")

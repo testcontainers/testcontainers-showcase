@@ -56,7 +56,9 @@ public abstract class AbstractIntegrationTest {
 
     protected List<Product> products = List.of(
             new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN),
-            new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24))
+            new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24)),
+            new Product(null, "P102", "Product 3", "Product 3 desc", null, BigDecimal.valueOf(34)),
+            new Product(null, "P103", "Product 4", "Product 4 desc", null, BigDecimal.valueOf(44))
     );
     protected List<CreditCard> creditCards = List.of(
             new CreditCard(null, "John", "1111222233334444", "123", 2, 2030),

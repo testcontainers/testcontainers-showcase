@@ -2,7 +2,8 @@ package org.testcontainers.bookstore.cart.api;
 
 import io.restassured.http.ContentType;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -28,22 +29,27 @@ public class UpdateCartItemApiTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
-
-    @RepeatedTest(4)
-    void shouldUpdateItemQuantity() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "P100",
+            "P101",
+            "P102",
+            "P103"
+    })
+    void shouldUpdateItemQuantity(String productCode) {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
-                new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
+                new CartItem(productCode, "Product name", "Product desc", BigDecimal.TEN, 2)
         )));
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
                                 {
-                                    "productCode": "P100",
+                                    "productCode": "%s",
                                     "quantity": 4
                                 }
-                                """
+                                """.formatted(productCode)
                 )
                 .when()
                 .put("/api/carts?cartId={cartId}", cartId)
@@ -51,15 +57,20 @@ public class UpdateCartItemApiTests extends AbstractIntegrationTest {
                 .statusCode(200)
                 .body("id", is(cartId))
                 .body("items", hasSize(1))
-                .body("items[0].productCode", is("P100"))
+                .body("items[0].productCode", is(productCode))
                 .body("items[0].quantity", is(4));
     }
 
 
-    @RepeatedTest(4)
-    void notFoundOnNonExistingCartUpdate() {
-        String cartId = UUID.randomUUID().toString();
-        cartRepository.save(new Cart(cartId, Set.of(
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-cart-id-1",
+            "non-existing-cart-id-2",
+            "non-existing-cart-id-3",
+            "non-existing-cart-id-4"
+    })
+    void notFoundOnNonExistingCartUpdate(String cartId) {
+        cartRepository.save(new Cart(UUID.randomUUID().toString(), Set.of(
                 new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
         )));
         given()
@@ -73,14 +84,20 @@ public class UpdateCartItemApiTests extends AbstractIntegrationTest {
                                 """
                 )
                 .when()
-                .put("/api/carts?cartId={cartId}", "non-existent")
+                .put("/api/carts?cartId={cartId}", cartId)
                 .then()
                 .statusCode(404);
     }
 
 
-    @RepeatedTest(4)
-    void notFoundOnNonExistingProductsInCartQuantity() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-product-code-1",
+            "non-existing-product-code-2",
+            "non-existing-product-code-3",
+            "non-existing-product-code-4"
+    })
+    void notFoundOnNonExistingProductsInCartQuantity(String productCode) {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
                 new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
@@ -90,10 +107,10 @@ public class UpdateCartItemApiTests extends AbstractIntegrationTest {
                 .body(
                         """
                                 {
-                                    "productCode": "non-existent",
+                                    "productCode": "%s",
                                     "quantity": 4
                                 }
-                                """
+                                """.formatted(productCode)
                 )
                 .when()
                 .put("/api/carts?cartId={cartId}", cartId)
@@ -101,13 +118,17 @@ public class UpdateCartItemApiTests extends AbstractIntegrationTest {
                 .statusCode(404);
     }
 
-
-    @RepeatedTest(4)
-    void updatesOnlyOneProductInCartQuantity() {
-        String cartId = UUID.randomUUID().toString();
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "cart-id-1",
+            "cart-id-2",
+            "cart-id-3",
+            "cart-id-4"
+    })
+    void updatesOnlyOneProductInCartQuantity(String cartId) {
         cartRepository.save(new Cart(cartId, Set.of(
                 new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2),
-                new CartItem("P200", "Product 2", "P200 desc", BigDecimal.ONE, 5)
+                new CartItem("P101", "Product 2", "P101 desc", BigDecimal.ONE, 5)
         )));
 
         Cart returnedCart = given()
@@ -133,26 +154,32 @@ public class UpdateCartItemApiTests extends AbstractIntegrationTest {
 
         Assertions.assertThat(returnedItems.get(0).getProductCode()).isEqualTo("P100");
         Assertions.assertThat(returnedItems.get(0).getQuantity()).isEqualTo(1);
-        Assertions.assertThat(returnedItems.get(1).getProductCode()).isEqualTo("P200");
+        Assertions.assertThat(returnedItems.get(1).getProductCode()).isEqualTo("P101");
         Assertions.assertThat(returnedItems.get(1).getQuantity()).isEqualTo(5);
     }
 
 
-    @RepeatedTest(4)
-    void shouldRemoveItemWhenUpdatedItemQuantityIsZero() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "P100",
+            "P101",
+            "P102",
+            "P103"
+    })
+    void shouldRemoveItemWhenUpdatedItemQuantityIsZero(String productCode) {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
-                new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
+                new CartItem(productCode, "Product 1", "Product desc", BigDecimal.TEN, 2)
         )));
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
                                 {
-                                    "productCode": "P100",
+                                    "productCode": "%s",
                                     "quantity": 0
                                 }
-                                """
+                                """.formatted(productCode)
                 )
                 .when()
                 .put("/api/carts?cartId={cartId}", cartId)

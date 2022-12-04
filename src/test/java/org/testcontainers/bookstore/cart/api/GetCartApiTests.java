@@ -2,6 +2,8 @@ package org.testcontainers.bookstore.cart.api;
 
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -10,7 +12,6 @@ import org.testcontainers.bookstore.cart.domain.CartRepository;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 
 import java.util.Set;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -39,21 +40,32 @@ public class GetCartApiTests extends AbstractIntegrationTest {
     }
 
 
-    @RepeatedTest(4)
-    void shouldGetNotFoundWhenCartIdNotExist() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-cart-id-1",
+            "non-existing-cart-id-2",
+            "non-existing-cart-id-3",
+            "non-existing-cart-id-4"
+    })
+    void shouldGetNotFoundWhenCartIdNotExist(String cartId) {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/api/carts?cartId=non-existing-cart-id")
+                .get("/api/carts?cartId={cartId}", cartId)
                 .then()
                 .statusCode(404)
         ;
     }
 
 
-    @RepeatedTest(4)
-    void shouldGetExistingCart() {
-        String cartId = UUID.randomUUID().toString();
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "cart-id-1",
+            "cart-id-2",
+            "cart-id-3",
+            "cart-id-4"
+    })
+    void shouldGetExistingCart(String cartId) {
         cartRepository.save(new Cart(cartId, Set.of()));
         given()
                 .contentType(ContentType.JSON)

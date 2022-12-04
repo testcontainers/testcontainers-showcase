@@ -1,9 +1,13 @@
 package org.testcontainers.bookstore.catalog.domain;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
@@ -36,23 +40,39 @@ class ProductRepositoryTest {
 
         productRepository.save(new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN));
         productRepository.save(new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24)));
+        productRepository.save(new Product(null, "P102", "Product 3", "Product 3 desc", null, BigDecimal.valueOf(34)));
+        productRepository.save(new Product(null, "P103", "Product 4", "Product 4 desc", null, BigDecimal.valueOf(44)));
     }
 
-
-    @RepeatedTest(4)
+    @Test
     void shouldGetAllProducts() {
         List<Product> products = productRepository.findAll();
-        assertThat(products).hasSize(2);
+        assertThat(products).hasSize(4);
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "P100, 10",
+            "P101, 24",
+            "P102, 34",
+            "P103, 44"
+    })
+    void shouldFailToProductWithDuplicateCode(String productCode, BigDecimal price) {
+        var product = new Product(null, productCode, "Product name", "Product desc", null, price);
+        Assertions.assertThrows(DuplicateKeyException.class, ()-> productRepository.save(product));
+    }
 
-    @RepeatedTest(4)
-    void shouldGetProductByCode() {
-        Optional<Product> optionalProduct = productRepository.findByCode("P100");
+    @ParameterizedTest
+    @CsvSource({
+            "P100, 10",
+            "P101, 24",
+            "P102, 34",
+            "P103, 44"
+    })
+    void shouldGetProductByCode(String productCode, BigDecimal price) {
+        Optional<Product> optionalProduct = productRepository.findByCode(productCode);
         assertThat(optionalProduct).isNotEmpty();
-        assertThat(optionalProduct.get().getCode()).isEqualTo("P100");
-        assertThat(optionalProduct.get().getName()).isEqualTo("Product 1");
-        assertThat(optionalProduct.get().getDescription()).isEqualTo("Product 1 desc");
-        assertThat(optionalProduct.get().getPrice()).isEqualTo(BigDecimal.TEN);
+        assertThat(optionalProduct.get().getCode()).isEqualTo(productCode);
+        assertThat(optionalProduct.get().getPrice()).isEqualTo(price);
     }
 }

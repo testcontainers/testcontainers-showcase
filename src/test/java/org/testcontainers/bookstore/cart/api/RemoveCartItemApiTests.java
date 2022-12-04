@@ -1,6 +1,9 @@
 package org.testcontainers.bookstore.cart.api;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -27,16 +30,21 @@ public class RemoveCartItemApiTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
-
-    @RepeatedTest(4)
-    void shouldRemoveItemFromCart() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "P100",
+            "P101",
+            "P102",
+            "P103"
+    })
+    void shouldRemoveItemFromCart(String productCode) {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
-                new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
+                new CartItem(productCode, "Product name", "Product desc", BigDecimal.TEN, 2)
         )));
         given()
                 .when()
-                .delete("/api/carts/items/{code}?cartId={cartId}", "P100", cartId)
+                .delete("/api/carts/items/{code}?cartId={cartId}", productCode, cartId)
                 .then()
                 .statusCode(200)
                 .body("id", is(cartId))
@@ -45,15 +53,21 @@ public class RemoveCartItemApiTests extends AbstractIntegrationTest {
     }
 
 
-    @RepeatedTest(4)
-    void shouldIgnoreDeletingNonExistentProductRemoveItemFromCart() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-productCode-1",
+            "non-existing-productCode-2",
+            "non-existing-productCode-3",
+            "non-existing-productCode-4"
+    })
+    void shouldIgnoreDeletingNonExistentProductRemoveItemFromCart(String productCode) {
         String cartId = UUID.randomUUID().toString();
         cartRepository.save(new Cart(cartId, Set.of(
-                new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
+                new CartItem("P100", "Product name", "Product desc", BigDecimal.TEN, 2)
         )));
         given()
                 .when()
-                .delete("/api/carts/items/{code}?cartId={cartId}", "non-existing-productCode", cartId)
+                .delete("/api/carts/items/{code}?cartId={cartId}", productCode, cartId)
                 .then()
                 .statusCode(200)
                 .body("id", is(cartId))

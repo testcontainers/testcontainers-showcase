@@ -1,6 +1,8 @@
 package org.testcontainers.bookstore.cart.api;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -11,7 +13,6 @@ import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
 import java.util.Set;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,10 +27,14 @@ public class RemoveCartApiTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
-
-    @RepeatedTest(4)
-    void shouldRemoveCart() {
-        String cartId = UUID.randomUUID().toString();
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "cart-id-1",
+            "cart-id-2",
+            "cart-id-3",
+            "cart-id-4"
+    })
+    void shouldRemoveCart(String cartId) {
         cartRepository.save(new Cart(cartId, Set.of(
                 new CartItem("P100", "Product 1", "P100 desc", BigDecimal.TEN, 2)
         )));
