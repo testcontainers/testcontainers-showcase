@@ -40,7 +40,7 @@ public class OrderService {
 
     public OrderConfirmationDTO createOrder(CreateOrderRequest orderRequest) {
         Order newOrder = orderMapper.convertToEntity(orderRequest);
-        Order savedOrder = this.orderRepository.save(newOrder);
+        Order savedOrder = this.orderRepository.saveAndFlush(newOrder);
         log.info("Created Order ID=" + savedOrder.getId() + ", ref_num=" + savedOrder.getOrderId());
 
         PaymentRequest paymentRequest = new PaymentRequest(
@@ -72,7 +72,7 @@ public class OrderService {
             throw new BadRequestException("Order is already delivered");
         }
         order.setStatus(OrderStatus.CANCELLED);
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
     }
 
     public List<Order> findOrdersByStatus(OrderStatus status) {
@@ -83,7 +83,7 @@ public class OrderService {
         Order order = orderRepository.findByOrderId(orderId).orElseThrow();
         order.setStatus(status);
         order.setComments(comments);
-        orderRepository.save(order);
+        orderRepository.saveAndFlush(order);
     }
 
 }
