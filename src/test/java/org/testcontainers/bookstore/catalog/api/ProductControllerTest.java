@@ -1,7 +1,7 @@
 package org.testcontainers.bookstore.catalog.api;
 
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -21,7 +21,7 @@ public class ProductControllerTest extends AbstractIntegrationTest {
         overridePropertiesInternal(registry);
     }
 
-    @RepeatedTest(4)
+    @Test
     void shouldGetAllProducts() {
         mockGetPromotions();
 
@@ -41,8 +41,7 @@ public class ProductControllerTest extends AbstractIntegrationTest {
                 .body("hasPrevious", is(false));
     }
 
-
-    @RepeatedTest(4)
+    @Test
     void shouldGetProductByCode() {
         mockGetPromotion("P100", new BigDecimal("2.5"));
         given()

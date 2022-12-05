@@ -1,5 +1,10 @@
 package org.testcontainers.bookstore.orders.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.bookstore.ApplicationProperties;
 import org.testcontainers.bookstore.events.OrderCreatedEvent;
 import org.testcontainers.bookstore.orders.api.CreateOrderRequest;
@@ -9,11 +14,6 @@ import org.testcontainers.bookstore.orders.domain.model.OrderConfirmationDTO;
 import org.testcontainers.bookstore.payment.domain.PaymentRequest;
 import org.testcontainers.bookstore.payment.domain.PaymentResponse;
 import org.testcontainers.bookstore.payment.domain.PaymentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;

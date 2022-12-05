@@ -1,9 +1,9 @@
 package org.testcontainers.bookstore.notifications;
 
-import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.testcontainers.bookstore.orders.domain.entity.Order;
 
 @Service
 public class NotificationService {

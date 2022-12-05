@@ -1,7 +1,7 @@
 package org.testcontainers.bookstore.cart.api;
 
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class GetCartApiTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
-    @RepeatedTest(4)
+    @Test
     void shouldGetNewCart() {
         given()
                 .contentType(ContentType.JSON)

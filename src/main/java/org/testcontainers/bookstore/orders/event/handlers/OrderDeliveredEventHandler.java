@@ -1,13 +1,13 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
-import org.testcontainers.bookstore.events.OrderDeliveredEvent;
-import org.testcontainers.bookstore.notifications.NotificationService;
-import org.testcontainers.bookstore.orders.domain.OrderService;
-import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.testcontainers.bookstore.events.OrderDeliveredEvent;
+import org.testcontainers.bookstore.notifications.NotificationService;
+import org.testcontainers.bookstore.orders.domain.OrderService;
+import org.testcontainers.bookstore.orders.domain.entity.Order;
 
 @Component
 public class OrderDeliveredEventHandler {
