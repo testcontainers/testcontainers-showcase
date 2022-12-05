@@ -3,6 +3,7 @@ package org.testcontainers.bookstore.orders.api;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.testcontainers.bookstore.orders.domain.CreateOrderHandler;
 import org.testcontainers.bookstore.orders.domain.OrderNotFoundException;
 import org.testcontainers.bookstore.orders.domain.OrderService;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
@@ -13,16 +14,18 @@ import org.testcontainers.bookstore.orders.domain.model.OrderDTO;
 @RequestMapping("/api/orders")
 public class OrderController {
 
+    private final CreateOrderHandler createOrderHandler;
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(CreateOrderHandler createOrderHandler, OrderService orderService) {
+        this.createOrderHandler = createOrderHandler;
         this.orderService = orderService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
     public OrderConfirmationDTO placeOrder(@Valid @RequestBody CreateOrderRequest orderRequest) {
-        return orderService.createOrder(orderRequest);
+        return createOrderHandler.createOrder(orderRequest);
     }
 
     @GetMapping(value = "/{orderId}")
