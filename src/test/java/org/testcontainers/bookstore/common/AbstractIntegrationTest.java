@@ -40,7 +40,8 @@ public abstract class AbstractIntegrationTest {
 
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
     protected static final MongoDBContainer mongodb = new MongoDBContainer("mongo:4.2");
-    protected static GenericContainer<?> kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
+    //protected static GenericContainer<?> kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
+    protected static GenericContainer<?> kafka = new RedpandaContainer("docker.redpanda.com/vectorized/redpanda:v22.2.1");
     protected static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0.5-alpine")).withExposedPorts(6379);
     protected static final MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
 
