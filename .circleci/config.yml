@@ -11,5 +11,7 @@ executors:
 workflows:
   maven_test:
     jobs:
-      - maven/test:
+      - maven/parallel_test:
           executor: machine_executor_amd64
+          parallelism: 4
+          parallel_it_pattern: "**/*Test*.java"
