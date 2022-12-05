@@ -1,44 +1,24 @@
 package org.testcontainers.bookstore.catalog.api;
 
-import org.testcontainers.bookstore.catalog.domain.Product;
-import org.testcontainers.bookstore.catalog.domain.ProductRepository;
-import org.testcontainers.bookstore.common.AbstractIntegrationTest;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.TestPropertySource;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-@TestPropertySource(properties = {
-    "app.promotion-service-type=remote"
-})
-class ProductControllerTest extends AbstractIntegrationTest {
+public class ProductControllerTest extends AbstractIntegrationTest {
 
-    @LocalServerPort
-    private Integer port;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    private List<Product> products = List.of(
-            new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN),
-            new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24))
-    );
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.baseURI = "http://localhost:" + port;
-        productRepository.deleteAll();
-        productRepository.saveAll(products);
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        overridePropertiesInternal(registry);
     }
 
     @Test
@@ -77,12 +57,19 @@ class ProductControllerTest extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
-    void shouldReturnNotFoundWhenProductCodeNotExists() {
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-product-code-1",
+            "non-existing-product-code-2",
+            "non-existing-product-code-3",
+            "non-existing-product-code-4"
+    })
+    void shouldReturnNotFoundWhenProductCodeNotExists(String productCode) {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/api/products/{code}", "invalid_product_code")
+                .get("/api/products/{code}", productCode)
                 .then()
                 .statusCode(404);
     }

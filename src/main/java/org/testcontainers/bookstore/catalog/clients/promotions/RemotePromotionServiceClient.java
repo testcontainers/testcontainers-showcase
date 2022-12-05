@@ -1,6 +1,5 @@
 package org.testcontainers.bookstore.catalog.clients.promotions;
 
-import org.testcontainers.bookstore.ApplicationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.testcontainers.bookstore.ApplicationProperties;
 
 import java.util.List;
 import java.util.Optional;

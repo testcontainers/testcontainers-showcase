@@ -1,16 +1,16 @@
 package org.testcontainers.bookstore.orders.api;
 
+import io.restassured.http.ContentType;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.orders.domain.OrderService;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
 import org.testcontainers.bookstore.orders.domain.model.OrderConfirmationDTO;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -21,21 +21,24 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-class CreateOrderApiTests extends AbstractIntegrationTest {
+public class CreateOrderApiTests extends AbstractIntegrationTest {
 
-    @LocalServerPort
-    private Integer port;
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        overridePropertiesInternal(registry);
+    }
 
     @Autowired
     private OrderService orderService;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.baseURI = "http://localhost:" + port;
-    }
-
-    @Test
-    void shouldCreateOrderSuccessfully() {
+    @ParameterizedTest
+    @CsvSource({
+            "P100",
+            "P101",
+            "P102",
+            "P103"
+    })
+    void shouldCreateOrderSuccessfully(String productCode) {
         OrderConfirmationDTO orderConfirmationDTO = given()
                 .contentType(ContentType.JSON)
                 .body(
@@ -55,14 +58,14 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                                     "expiryYear": 2030,
                                     "items": [
                                         {
-                                            "productCode": "P100",
-                                            "productName": "Product 1",
+                                            "productCode": "%s",
+                                            "productName": "Product name",
                                             "productPrice": 25.50,
                                             "quantity": 1
                                         }
                                     ]
                                 }
-                                """
+                                """.formatted(productCode)
                 )
                 .when()
                 .post("/api/orders")
@@ -72,41 +75,47 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                 .body("orderStatus", is("NEW"))
                 .extract().body().as(OrderConfirmationDTO.class);
 
-        await().pollInterval(Duration.ofSeconds(5)).atMost(20, SECONDS).until(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).until(() -> {
             Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
             return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.DELIVERED;
         });
     }
 
-    @Test
-    void shouldCreateOrderWithErrorStatusWhenPaymentRejected() {
+    @ParameterizedTest
+    @CsvSource({
+            "1111111111111",
+            "2222222222222",
+            "3333333333333",
+            "4444444444444"
+    })
+    void shouldCreateOrderWithErrorStatusWhenPaymentRejected(String cardNumber) {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "customerName": "Siva",
-                            "customerEmail": "siva@gmail.com",
-                            "deliveryAddressLine1": "Birkelweg",
-                            "deliveryAddressLine2": "Hans-Edenhofer-Straße 23",
-                            "deliveryAddressCity": "Berlin",
-                            "deliveryAddressState": "Berlin",
-                            "deliveryAddressZipCode": "94258",
-                            "deliveryAddressCountry": "Germany",
-                            "cardNumber": "1111222233334444",
-                            "cvv": "345",
-                            "expiryMonth": 2,
-                            "expiryYear": 2024,
-                            "items": [
                                 {
-                                    "productCode": "P100",
-                                    "productName": "Product 1",
-                                    "productPrice": 25.50,
-                                    "quantity": 1
+                                    "customerName": "Siva",
+                                    "customerEmail": "siva@gmail.com",
+                                    "deliveryAddressLine1": "Birkelweg",
+                                    "deliveryAddressLine2": "Hans-Edenhofer-Straße 23",
+                                    "deliveryAddressCity": "Berlin",
+                                    "deliveryAddressState": "Berlin",
+                                    "deliveryAddressZipCode": "94258",
+                                    "deliveryAddressCountry": "Germany",
+                                    "cardNumber": "%s",
+                                    "cvv": "345",
+                                    "expiryMonth": 2,
+                                    "expiryYear": 2024,
+                                    "items": [
+                                        {
+                                            "productCode": "P100",
+                                            "productName": "Product 1",
+                                            "productPrice": 25.50,
+                                            "quantity": 1
+                                        }
+                                    ]
                                 }
-                            ]
-                        }
-                        """
+                                """.formatted(cardNumber)
                 )
                 .when()
                 .post("/api/orders")
@@ -117,27 +126,33 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
-    void shouldReturnBadRequestWhenMandatoryDataIsMissing() {
+    @ParameterizedTest
+    @CsvSource({
+            "1111111111111",
+            "2222222222222",
+            "3333333333333",
+            "4444444444444"
+    })
+    void shouldReturnBadRequestWhenMandatoryDataIsMissing(String cardNumber) {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "cardNumber": "1111222233334444",
-                            "cvv": "345",
-                            "expiryMonth": 2,
-                            "expiryYear": 2024,
-                            "items": [
                                 {
-                                    "productCode": "P100",
-                                    "productName": "Product 1",
-                                    "productPrice": 25.50,
-                                    "quantity": 1
+                                    "cardNumber": "%s",
+                                    "cvv": "345",
+                                    "expiryMonth": 2,
+                                    "expiryYear": 2024,
+                                    "items": [
+                                        {
+                                            "productCode": "P100",
+                                            "productName": "Product 1",
+                                            "productPrice": 25.50,
+                                            "quantity": 1
+                                        }
+                                    ]
                                 }
-                            ]
-                        }
-                        """
+                                """.formatted(cardNumber)
                 )
                 .when()
                 .post("/api/orders")
@@ -146,8 +161,14 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
-    void shouldCancelOrderWhenCanNotBeDelivered() {
+    @ParameterizedTest
+    @CsvSource({
+            "Belgium",
+            "Denmark",
+            "Dubai",
+            "Poland"
+    })
+    void shouldCancelOrderWhenCanNotBeDelivered(String country) {
         OrderConfirmationDTO orderConfirmationDTO = given()
                 .contentType(ContentType.JSON)
                 .body(
@@ -160,7 +181,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                                     "deliveryAddressCity": "Turkey",
                                     "deliveryAddressState": "Turkey",
                                     "deliveryAddressZipCode": "94258",
-                                    "deliveryAddressCountry": "Turkey",
+                                    "deliveryAddressCountry": "%s",
                                     "cardNumber": "1111222233334444",
                                     "cvv": "123",
                                     "expiryMonth": 2,
@@ -174,7 +195,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """
+                                """.formatted(country)
                 )
                 .when()
                 .post("/api/orders")
@@ -184,7 +205,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                 .body("orderStatus", is("NEW"))
                 .extract().body().as(OrderConfirmationDTO.class);
 
-        await().atMost(15, SECONDS).until(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).until(() -> {
             Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
             return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.CANCELLED;
         });

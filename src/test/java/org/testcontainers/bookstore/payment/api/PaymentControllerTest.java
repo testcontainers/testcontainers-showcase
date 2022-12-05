@@ -1,39 +1,40 @@
 package org.testcontainers.bookstore.payment.api;
 
-import org.testcontainers.bookstore.common.AbstractIntegrationTest;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
-class PaymentControllerTest extends AbstractIntegrationTest {
+public class PaymentControllerTest extends AbstractIntegrationTest {
 
-    @LocalServerPort
-    private Integer port;
-
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.baseURI = "http://localhost:" + port;
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        overridePropertiesInternal(registry);
     }
 
-    @Test
-    void shouldAuthorizePaymentSuccessfully() {
+    @ParameterizedTest
+    @CsvSource({
+            "1111222233334444, 123, 2, 2030",
+            "1234123412341234, 123, 10, 2030",
+            "1234567890123456, 123, 3, 2030"
+    })
+    void shouldAuthorizePaymentSuccessfully(String cardNumber, String cvv, int expiryMonth, int expiryYear) {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "cardNumber": "1111222233334444",
-                            "cvv": "123",
-                            "expiryMonth": 2,
-                            "expiryYear": 2030
-                        }
-                        """
+                                {
+                                    "cardNumber": "%s",
+                                    "cvv": "%s",
+                                    "expiryMonth": "%d",
+                                    "expiryYear": "%d"
+                                }
+                                """.formatted(cardNumber, cvv, expiryMonth, expiryYear)
                 )
                 .when()
                 .post("/api/payments/authorize")
@@ -42,19 +43,25 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .body("status", is("ACCEPTED"));
     }
 
-    @Test
-    void shouldRejectPaymentWhenCVVIsIncorrect() {
+
+    @ParameterizedTest
+    @CsvSource({
+            "1111222233334444, 111, 2, 2030",
+            "1234123412341234, 222, 10, 2030",
+            "1234567890123456, 333, 3, 2030"
+    })
+    void shouldRejectPaymentWhenCVVIsIncorrect(String cardNumber, String cvv, int expiryMonth, int expiryYear) {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "cardNumber": "1111222233334444",
-                            "cvv": "111",
-                            "expiryMonth": 2,
-                            "expiryYear": 2030
-                        }
-                        """
+                                {
+                                    "cardNumber": "%s",
+                                    "cvv": "%s",
+                                    "expiryMonth": "%d",
+                                    "expiryYear": "%d"
+                                }
+                                """.formatted(cardNumber, cvv, expiryMonth, expiryYear)
                 )
                 .when()
                 .post("/api/payments/authorize")
@@ -63,17 +70,23 @@ class PaymentControllerTest extends AbstractIntegrationTest {
                 .body("status", is("REJECTED"));
     }
 
-    @Test
-    void shouldFailWhenMandatoryDataIsMissing() {
+
+    @ParameterizedTest
+    @CsvSource({
+            "1111222233334444, 111",
+            "1234123412341234, 222",
+            "1234567890123456, 333"
+    })
+    void shouldFailWhenMandatoryDataIsMissing(String cardNumber, String cvv) {
         given()
                 .contentType(ContentType.JSON)
                 .body(
                         """
-                        {
-                            "cardNumber": "1111222233334444",
-                            "cvv": "111"
-                        }
-                        """
+                                {
+                                   "cardNumber": "%s",
+                                    "cvv": "%s"
+                                }
+                                """.formatted(cardNumber, cvv)
                 )
                 .when()
                 .post("/api/payments/authorize")

@@ -1,9 +1,9 @@
 package org.testcontainers.bookstore.catalog;
 
-import org.testcontainers.bookstore.catalog.domain.Product;
-import org.testcontainers.bookstore.catalog.domain.ProductRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.testcontainers.bookstore.catalog.domain.Product;
+import org.testcontainers.bookstore.catalog.domain.ProductRepository;
 
 import java.math.BigDecimal;
 

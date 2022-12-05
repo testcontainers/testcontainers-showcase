@@ -1,35 +1,30 @@
 package org.testcontainers.bookstore.cart.api;
 
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartRepository;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.util.Set;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
-class GetCartApiTests extends AbstractIntegrationTest {
+public class GetCartApiTests extends AbstractIntegrationTest {
 
-    @LocalServerPort
-    private Integer port;
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        overridePropertiesInternal(registry);
+    }
 
     @Autowired
     private CartRepository cartRepository;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.baseURI = "http://localhost:" + port;
-    }
 
     @Test
     void shouldGetNewCart() {
@@ -44,20 +39,33 @@ class GetCartApiTests extends AbstractIntegrationTest {
         ;
     }
 
-    @Test
-    void shouldGetNotFoundWhenCartIdNotExist() {
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-cart-id-1",
+            "non-existing-cart-id-2",
+            "non-existing-cart-id-3",
+            "non-existing-cart-id-4"
+    })
+    void shouldGetNotFoundWhenCartIdNotExist(String cartId) {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/api/carts?cartId=non-existing-cart-id")
+                .get("/api/carts?cartId={cartId}", cartId)
                 .then()
                 .statusCode(404)
         ;
     }
 
-    @Test
-    void shouldGetExistingCart() {
-        String cartId = UUID.randomUUID().toString();
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "cart-id-1",
+            "cart-id-2",
+            "cart-id-3",
+            "cart-id-4"
+    })
+    void shouldGetExistingCart(String cartId) {
         cartRepository.save(new Cart(cartId, Set.of()));
         given()
                 .contentType(ContentType.JSON)

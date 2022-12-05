@@ -1,10 +1,10 @@
 package org.testcontainers.bookstore.orders.domain;
 
+import org.springframework.stereotype.Component;
 import org.testcontainers.bookstore.orders.api.CreateOrderRequest;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderItem;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
-import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;

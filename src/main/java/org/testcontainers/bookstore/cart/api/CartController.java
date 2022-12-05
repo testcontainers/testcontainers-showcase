@@ -1,5 +1,10 @@
 package org.testcontainers.bookstore.cart.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartItem;
 import org.testcontainers.bookstore.cart.domain.CartNotFoundException;
@@ -7,19 +12,6 @@ import org.testcontainers.bookstore.cart.domain.CartRepository;
 import org.testcontainers.bookstore.catalog.domain.Product;
 import org.testcontainers.bookstore.catalog.domain.ProductNotFoundException;
 import org.testcontainers.bookstore.catalog.domain.ProductService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/carts")

@@ -1,13 +1,13 @@
 package org.testcontainers.bookstore.payment.api;
 
-import org.testcontainers.bookstore.payment.domain.PaymentRequest;
-import org.testcontainers.bookstore.payment.domain.PaymentResponse;
-import org.testcontainers.bookstore.payment.domain.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.testcontainers.bookstore.payment.domain.PaymentRequest;
+import org.testcontainers.bookstore.payment.domain.PaymentResponse;
+import org.testcontainers.bookstore.payment.domain.PaymentService;
 
 @RestController
 @RequestMapping("/api/payments")

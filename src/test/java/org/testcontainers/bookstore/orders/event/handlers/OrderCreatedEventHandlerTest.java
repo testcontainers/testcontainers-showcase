@@ -1,17 +1,20 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.ApplicationProperties;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.events.OrderCreatedEvent;
 import org.testcontainers.bookstore.orders.domain.OrderRepository;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -21,13 +24,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
+public class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(OrderCreatedEventHandlerTest.class);
+
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        overridePropertiesInternal(registry);
+    }
+
     @Autowired
     private OrderRepository orderRepository;
 
     @Autowired
-    private KafkaTemplate<String,Object> kafkaTemplate;
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
     private ApplicationProperties properties;
@@ -36,7 +45,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
     void shouldIgnoreOrderCreatedEventWhenOrderNotFound() {
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent("non-existing-order_id"));
 
-        await().atMost(5, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService, never()).sendConfirmationNotification(any(Order.class));
         });
     }
@@ -59,7 +68,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         log.info("Created OrderId: {}", order.getOrderId());
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
-        await().atMost(5, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService, never()).sendConfirmationNotification(any(Order.class));
         });
 
@@ -83,7 +92,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
 
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
-        await().atMost(30, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService).sendConfirmationNotification(any(Order.class));
         });
 
@@ -107,7 +116,7 @@ class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
 
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
-        await().atMost(10, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             Order verifyingOrder = orderRepository.findByOrderId(order.getOrderId()).orElseThrow();
             assertThat(verifyingOrder.getStatus()).isEqualTo(OrderStatus.CANCELLED);
         });

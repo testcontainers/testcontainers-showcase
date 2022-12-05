@@ -1,5 +1,6 @@
 package org.testcontainers.bookstore.cart.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @RedisHash("carts")
 public class Cart {
     @Id

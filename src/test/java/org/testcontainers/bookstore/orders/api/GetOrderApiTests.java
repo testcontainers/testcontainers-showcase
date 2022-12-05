@@ -1,14 +1,15 @@
 package org.testcontainers.bookstore.orders.api;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.orders.domain.OrderService;
 import org.testcontainers.bookstore.orders.domain.model.OrderConfirmationDTO;
 import org.testcontainers.bookstore.orders.domain.model.OrderDTO;
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -16,21 +17,24 @@ import java.util.Set;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GetOrderApiTests extends AbstractIntegrationTest {
+public class GetOrderApiTests extends AbstractIntegrationTest {
 
-    @LocalServerPort
-    private Integer port;
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        overridePropertiesInternal(registry);
+    }
 
     @Autowired
     private OrderService orderService;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.baseURI = "http://localhost:" + port;
-    }
-
-    @Test
-    void shouldCreateOrderSuccessfully() {
+    @ParameterizedTest
+    @CsvSource({
+            "P100",
+            "P101",
+            "P102",
+            "P103"
+    })
+    void shouldCreateOrderSuccessfully(String productCode) {
         CreateOrderRequest createOrderRequest = new CreateOrderRequest();
         createOrderRequest.setCustomerName("Siva");
         createOrderRequest.setCustomerEmail("siva@gmail.com");
@@ -45,7 +49,7 @@ class GetOrderApiTests extends AbstractIntegrationTest {
         createOrderRequest.setExpiryMonth(10);
         createOrderRequest.setExpiryYear(2025);
         createOrderRequest.setItems(Set.of(
-                new CreateOrderRequest.LineItem("P100", "Product 1", BigDecimal.TEN, 1)
+                new CreateOrderRequest.LineItem(productCode, "Product name", BigDecimal.TEN, 1)
         ));
         OrderConfirmationDTO orderConfirmationDTO = orderService.createOrder(createOrderRequest);
 
@@ -60,11 +64,18 @@ class GetOrderApiTests extends AbstractIntegrationTest {
         assertThat(orderDTO.getItems()).hasSize(1);
     }
 
-    @Test
-    void shouldReturnNotFoundWhenOrderIdNotExist() {
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "non-existing-order-1",
+            "non-existing-order-2",
+            "non-existing-order-3",
+            "non-existing-order-4"
+    })
+    void shouldReturnNotFoundWhenOrderIdNotExist(String orderId) {
         given()
                 .when()
-                .get("/api/orders/{orderId}", "non-existing-order-id")
+                .get("/api/orders/{orderId}", orderId)
                 .then()
                 .statusCode(404);
     }

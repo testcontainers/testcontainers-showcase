@@ -1,16 +1,19 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.ApplicationProperties;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.events.OrderCancelledEvent;
 import org.testcontainers.bookstore.orders.domain.OrderRepository;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -19,14 +22,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
+public class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(OrderCancelledEventHandlerTest.class);
+
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        overridePropertiesInternal(registry);
+    }
 
     @Autowired
     private OrderRepository orderRepository;
 
     @Autowired
-    private KafkaTemplate<String,Object> kafkaTemplate;
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Autowired
     private ApplicationProperties properties;
@@ -49,7 +57,7 @@ class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
         log.info("Cancelling OrderId: {}", order.getOrderId());
         kafkaTemplate.send(properties.cancelledOrdersTopic(), new OrderCancelledEvent(order.getOrderId()));
 
-        await().atMost(30, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService).sendCancelledNotification(any(Order.class));
         });
 
@@ -59,7 +67,7 @@ class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
     void shouldIgnoreOrderCancelledEventWhenOrderNotFound() {
         kafkaTemplate.send(properties.cancelledOrdersTopic(), new OrderCancelledEvent("non-existing-order_id"));
 
-        await().atMost(5, SECONDS).untilAsserted(() -> {
+        await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService, never()).sendCancelledNotification(any(Order.class));
         });
 

@@ -1,12 +1,12 @@
 package org.testcontainers.bookstore.catalog.domain;
 
-import org.testcontainers.bookstore.catalog.clients.promotions.Promotion;
-import org.testcontainers.bookstore.catalog.clients.promotions.PromotionServiceClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.testcontainers.bookstore.catalog.clients.promotions.Promotion;
+import org.testcontainers.bookstore.catalog.clients.promotions.PromotionServiceClient;
 
 import java.math.BigDecimal;
 import java.util.List;
