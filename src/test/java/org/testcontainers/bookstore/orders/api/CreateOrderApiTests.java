@@ -3,6 +3,8 @@ package org.testcontainers.bookstore.orders.api;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
 import org.testcontainers.bookstore.orders.domain.OrderService;
@@ -20,6 +22,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class CreateOrderApiTests extends AbstractIntegrationTest {
+    private static final Logger log = LoggerFactory.getLogger(CreateOrderApiTests.class);
 
     @Autowired
     private OrderService orderService;
@@ -68,8 +71,14 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                 .body("orderStatus", is("NEW"))
                 .extract().body().as(OrderConfirmationDTO.class);
 
+        log.info("Created new order with order_id:{}. Now verifying it's status...", orderConfirmationDTO.getOrderId());
         await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).until(() -> {
+            log.info("verifying order status of order_id:{} to be DELIVERED", orderConfirmationDTO.getOrderId());
             Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
+            log.info("order exists with order_id:{}", orderOptional.isPresent());
+            if(orderOptional.isPresent()) {
+                log.info("order_id:{}, status:{}", orderOptional.get().getOrderId(), orderOptional.get().getStatus());
+            }
             return orderOptional.isPresent() && orderOptional.get().getStatus() == OrderStatus.DELIVERED;
         });
     }
