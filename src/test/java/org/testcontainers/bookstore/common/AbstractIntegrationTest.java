@@ -2,7 +2,6 @@ package org.testcontainers.bookstore.common;
 
 import io.restassured.RestAssured;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
@@ -12,12 +11,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.catalog.domain.Product;
 import org.testcontainers.bookstore.catalog.domain.ProductRepository;
 import org.testcontainers.bookstore.notifications.NotificationService;
 import org.testcontainers.bookstore.payment.domain.CreditCard;
 import org.testcontainers.bookstore.payment.domain.CreditCardRepository;
-import org.testcontainers.containers.*;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.containers.MockServerContainer;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -76,16 +80,17 @@ public abstract class AbstractIntegrationTest {
         creditCardRepository.saveAll(creditCards);
     }
 
-    @AfterAll
+    /*@AfterAll
     static void afterAllBase() {
         mockServer.stop();
         kafka.stop();
         redis.stop();
         postgres.stop();
         mongodb.stop();
-    }
+    }*/
 
-    protected static void overridePropertiesInternal(DynamicPropertyRegistry registry) {
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
         Startables.deepStart(mongodb, postgres, redis, kafka, mockServer).join();
 
         registry.add("spring.data.mongodb.uri", mongodb::getReplicaSetUrl);

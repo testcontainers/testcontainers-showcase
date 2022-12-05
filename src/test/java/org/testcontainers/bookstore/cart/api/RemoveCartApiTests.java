@@ -3,8 +3,6 @@ package org.testcontainers.bookstore.cart.api;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.cart.domain.Cart;
 import org.testcontainers.bookstore.cart.domain.CartItem;
 import org.testcontainers.bookstore.cart.domain.CartRepository;
@@ -17,11 +15,6 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RemoveCartApiTests extends AbstractIntegrationTest {
-
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        overridePropertiesInternal(registry);
-    }
 
     @Autowired
     private CartRepository cartRepository;
