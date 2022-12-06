@@ -11,5 +11,7 @@
 
     <logger name="org.testcontainers" level="INFO"/>
     <logger name="com.github.dockerjava" level="WARN"/>
+    <logger name="org.springframework.kafka" level="WARN"/>
+    <logger name="org.apache.kafka" level="WARN"/>
     <logger name="org.apache.kafka.clients.NetworkClient" level="ERROR"/>
 </configuration>
