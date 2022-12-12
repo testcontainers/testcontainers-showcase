@@ -26,18 +26,16 @@ public class TimeChecker implements AfterAllCallback, BeforeAllCallback, BeforeT
     @Override
     public void afterAll(ExtensionContext ec) throws Exception {
         String className = className(ec);
-        System.out.println("PREPARING REPORT FOR " + className);
+        System.out.println("Preparing report for " + className);
         try {
             stopped.put(className, Instant.now());
             sessions.put(className, DockerClientFactory.SESSION_ID);
 
             Duration total = Duration.between(started.get(className), stopped.get(className));
             Duration init = Duration.between(started.get(className), firstTestStarting.get(className));
-
-            System.out.printf("REPORT;%-90s;%7d;%7d; %s;%n%n", className, total.toMillis(), init.toMillis(), sessions.get(className));
-
+            System.out.printf("REPORT;%-90s;%15d;%7d;%7d; %s;%n%n", className, started.get(className).toEpochMilli(), total.toMillis(), init.toMillis(), sessions.get(className));
         } catch (Exception e) {
-            System.out.println("Cannot create report for " + className);
+            System.out.println("Cannot create REPORT for " + className);
             e.printStackTrace(System.out);
         }
     }
