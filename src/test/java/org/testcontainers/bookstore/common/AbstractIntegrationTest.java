@@ -3,6 +3,7 @@ package org.testcontainers.bookstore.common;
 import io.restassured.RestAssured;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Header;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.model.JsonBody.json;
 
+@ExtendWith(TimeChecker.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public abstract class AbstractIntegrationTest {
