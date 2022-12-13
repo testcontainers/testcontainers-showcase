@@ -4,6 +4,7 @@
             <url>https://gradle.com/terms-of-service</url>
             <accept>true</accept>
         </termsOfService>
+        <backgroundBuildScanUpload>false</backgroundBuildScanUpload>
         <publish>ALWAYS</publish>
     </buildScan>
 </gradleEnterprise>
