@@ -150,7 +150,8 @@ public abstract class AbstractIntegrationTest {
 
         Thread printingHook = new Thread(() -> {
             try {
-                PrintWriter pw = new PrintWriter(new FileOutputStream("load-results" + ThreadLocalRandom.current().nextInt(100) + ".txt"));
+                //PrintWriter pw = new PrintWriter(new FileOutputStream("load-results" + ThreadLocalRandom.current().nextInt(100) + ".txt"));
+                PrintWriter pw = new PrintWriter(System.out);
 
                 pw.println("OLEGOLEGOLEGOLEGOLEG");
                 pw.println("OLEGOLEGOLEGOLEGOLEG");
@@ -161,7 +162,7 @@ public abstract class AbstractIntegrationTest {
                 pw.println("OLEGOLEGOLEGOLEGOLEG");
                 pw.println("OLEGOLEGOLEGOLEGOLEG");
                 pw.flush();
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
