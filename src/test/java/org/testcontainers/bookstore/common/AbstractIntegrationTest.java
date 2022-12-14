@@ -23,8 +23,15 @@ import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 import static org.mockserver.model.HttpRequest.request;
@@ -110,6 +117,57 @@ public abstract class AbstractIntegrationTest {
         else throw new RuntimeException("Unknown Kafka");
     }
 
+    public static double CPULOAD_SUM = 0.0;
+    public static int CPULOAD_COUNT = 0;
+
+    public static double USED_MEM_RATIO = 0.0;
+    public static int USED_MEM_COUNT = 0;
+
+    static {
+        Timer timer = new Timer();
+
+        final com.sun.management.OperatingSystemMXBean bean = ( com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        bean.getSystemCpuLoad();
+
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                double cpuLoad = bean.getCpuLoad();
+                if (cpuLoad >= 0) {
+                    CPULOAD_SUM += cpuLoad;
+                    CPULOAD_COUNT += 1;
+                }
+
+                {
+                    double usedMem = 1.0 - (bean.getFreeMemorySize() * 1.0 / bean.getTotalMemorySize());
+                    USED_MEM_RATIO += usedMem;
+                    USED_MEM_COUNT += 1;
+                }
+
+            }
+        }, 10, 1000);
+
+        Thread printingHook = new Thread(() -> {
+            try {
+                PrintWriter pw = new PrintWriter(new FileOutputStream("load-results" + ThreadLocalRandom.current().nextInt(100) + ".txt"));
+
+                pw.println("OLEGOLEGOLEGOLEGOLEG");
+                pw.println("OLEGOLEGOLEGOLEGOLEG");
+
+                pw.println("Average CPU LOAD During execution:" + (CPULOAD_SUM / CPULOAD_COUNT));
+                pw.println("Average memory consumption during execution:" + (USED_MEM_RATIO / USED_MEM_COUNT));
+
+                pw.println("OLEGOLEGOLEGOLEGOLEG");
+                pw.println("OLEGOLEGOLEGOLEGOLEG");
+                pw.flush();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+        Runtime.getRuntime().addShutdownHook(printingHook);
+    }
     protected static void mockGetPromotions() {
         mockServerClient.when(
                         request().withMethod("GET").withPath("/api/promotions?productCodes=.*"))
