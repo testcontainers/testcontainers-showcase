@@ -10,7 +10,7 @@ pipeline {
             steps {
                 echo "The TC_Token is ${env.TC_CLOUD_TOKEN}"
                 script {
-                    sh -c "curl -fsSL https://get.testcontainers.cloud/bash"
+                    sh "curl -fsSL https://get.testcontainers.cloud/bash | sh "
                 }
             }
         }
