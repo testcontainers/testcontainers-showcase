@@ -8,9 +8,9 @@ pipeline {
     stages {
         stage('TCC SetUp') {
             steps {
+                echo "The TC_Token is ${env.TC_CLOUD_TOKEN}"
                 script {
-                    echo "The TC_Token is ${env.TC_CLOUD_TOKEN}"
-                    sh -c "\$(curl -fsSL https://get.testcontainers.cloud/bash)"
+                    sh -c "curl -fsSL https://get.testcontainers.cloud/bash"
                 }
             }
         }
