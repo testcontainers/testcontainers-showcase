@@ -21,3 +21,11 @@ jobs:
       - name: Build with Maven
         run: ./mvnw verify
 
+      - name: Store JFR recordings
+        uses: actions/upload-artifact@v3
+        with:
+          name: jfr-recordings
+          retention-days: 5
+          path: |
+            recording-*.jfr
+
