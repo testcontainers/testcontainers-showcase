@@ -160,73 +160,6 @@
             <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
-            <version>1.21.0-alpha</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry.javaagent</groupId>
-            <artifactId>opentelemetry-javaagent-extension-api</artifactId>
-            <version>1.21.0-alpha</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-logging</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk-extension-autoconfigure-spi</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-api</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk-metrics</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk-common</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk-trace</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-context</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-otlp-common</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-otlp</artifactId>
-            <version>1.21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-zipkin</artifactId>
-            <version>1.21.0</version>
-        </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-jfr</artifactId>
@@ -256,7 +189,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                 <argLine>-javaagent:./lib/opentelemetry-javaagent.jar -Dotel.javaagent.extensions=./lib/opentelemetry-java-instrumentation-extension-demo-1.0.jar -Dotel.service.name=tc-otel-tracing-demo -Dotel.traces.exporter=logging-otlp -Dotel.metrics.exporter=none -XX:StartFlightRecording=disk=true,dumponexit=true,filename=./recording-${surefire.forkNumber}.jfr,maxsize=1024m,maxage=2d,settings=profile,path-to-gc-roots=true</argLine>
+                 <argLine>-javaagent:./lib/opentelemetry-javaagent.jar -Dotel.javaagent.extensions=./lib/opentelemetry-java-instrumentation-extension-demo-1.0-all.jar -Dotel.service.name=tc-otel-tracing-demo -Dotel.traces.exporter=logging-otlp -Dotel.metrics.exporter=none  -XX:StartFlightRecording=disk=true,dumponexit=true,filename=./recording-${surefire.forkNumber}.jfr,maxsize=1024m,maxage=2d,settings=profile,path-to-gc-roots=true</argLine>
                     <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                 </configuration>
                 <version>3.0.0-M7</version>
