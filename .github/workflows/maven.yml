@@ -24,7 +24,7 @@ jobs:
           TC_CLOUD_TOKEN: ${{ secrets.TC_CLOUD_TOKEN }}
 
       - name: Build with Maven
-        run: ./mvnw -DforkCount=3 verify
+        run: ./mvnw -DforkCount=4 verify
 
       - name: Store JFR recordings
         uses: actions/upload-artifact@v3
