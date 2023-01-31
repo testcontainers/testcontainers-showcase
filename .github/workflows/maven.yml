@@ -22,10 +22,10 @@ jobs:
         uses: atomicjar/testcontainers-cloud-setup-action@main
         env:
          TC_CLOUD_TOKEN: ${{ secrets.TC_CLOUD_TOKEN }}
-         TC_CLOUD_CONCURRENCY: 5
+         TC_CLOUD_CONCURRENCY: 2
 
       - name: Build with Maven
-        run: ./mvnw -DforkCount=5 verify
+        run: ./mvnw -DforkCount=4 verify
 
       - name: Store JFR recordings
         uses: actions/upload-artifact@v3
