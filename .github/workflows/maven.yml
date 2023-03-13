@@ -18,14 +18,8 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Setup Testcontainers Cloud
-        uses: atomicjar/testcontainers-cloud-setup-action@main
-        env:
-         TC_CLOUD_TOKEN: ${{ secrets.TC_CLOUD_TOKEN }}
-         TC_CLOUD_CONCURRENCY: 1
-
       - name: Build with Maven
-        run: ./mvnw -DforkCount=2 verify
+        run: ./mvnw -DforkCount=1 verify
 
       - name: Store JFR recordings
         uses: actions/upload-artifact@v3
