@@ -24,6 +24,23 @@ jobs:
          TC_CLOUD_TOKEN: ${{ secrets.TC_CLOUD_TOKEN }}
          TC_CLOUD_CONCURRENCY: 2
 
+      - name: prepull
+        run: |
+          DOCKER_CONTEXT=tcc docker pull -q postgres:15-alpine &
+          DOCKER_CONTEXT=tcc docker pull -q mongo:4.2 &
+          DOCKER_CONTEXT=tcc docker pull -q confluentinc/cp-kafka:7.2.1 &
+          DOCKER_CONTEXT=tcc docker pull -q redis:7.0.5-alpine &
+          DOCKER_CONTEXT=tcc docker pull -q jamesdbloom/mockserver:mockserver-5.13.2 &
+          DOCKER_CONTEXT=tcc docker pull -q docker.redpanda.com/vectorized/redpanda:v22.2.1 &
+          DOCKER_CONTEXT=tcc docker pull -q testcontainers/ryuk:0.3.4 &
+          DOCKER_CONTEXT=tcc2 docker pull -q postgres:15-alpine &
+          DOCKER_CONTEXT=tcc2 docker pull -q mongo:4.2 &
+          DOCKER_CONTEXT=tcc2 docker pull -q confluentinc/cp-kafka:7.2.1 &
+          DOCKER_CONTEXT=tcc2 docker pull -q redis:7.0.5-alpine &
+          DOCKER_CONTEXT=tcc2 docker pull -q jamesdbloom/mockserver:mockserver-5.13.2 &
+          DOCKER_CONTEXT=tcc2 docker pull -q docker.redpanda.com/vectorized/redpanda:v22.2.1 &
+          DOCKER_CONTEXT=tcc2 docker pull -q testcontainers/ryuk:0.3.4 &
+
       - name: Build with Maven
         run: ./mvnw -DforkCount=4 verify
 
@@ -34,4 +51,5 @@ jobs:
           retention-days: 5
           path: |
             recording-*.jfr
+            beep.txt
 
