@@ -18,6 +18,12 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Setup Testcontainers Cloud
+        uses: atomicjar/testcontainers-cloud-setup-action@main
+        env:
+         TC_CLOUD_TOKEN: ${{ secrets.TC_CLOUD_TOKEN }}
+         TC_CLOUD_CONCURRENCY: 1
+
       - name: prepull
         run: |
           DOCKER_CONTEXT=tcc docker pull -q postgres:15-alpine &
