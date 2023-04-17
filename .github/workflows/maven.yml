@@ -42,7 +42,7 @@ jobs:
           DOCKER_CONTEXT=tcc2 docker pull -q testcontainers/ryuk:0.3.4 &
 
       - name: Build with Maven
-        run: ./mvnw -DforkCount=4 verify
+        run: ./mvnw -DforkCount=5 verify
 
       - name: Store JFR recordings
         uses: actions/upload-artifact@v3
