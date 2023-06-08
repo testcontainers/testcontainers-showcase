@@ -13,7 +13,5 @@ class BookstoreApplicationTests extends AbstractIntegrationTest {
     }
 
     @Test
-    void contextLoads() {
-    }
-
+    void contextLoads() {}
 }

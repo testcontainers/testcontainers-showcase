@@ -1,5 +1,7 @@
 package org.testcontainers.bookstore.catalog.clients.promotions;
 
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.bookstore.ApplicationProperties;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @ConditionalOnProperty(name = "app.promotion-service-type", havingValue = "remote", matchIfMissing = true)
@@ -35,9 +34,10 @@ public class RemotePromotionServiceClient implements PromotionServiceClient {
             HttpEntity<?> httpEntity = new HttpEntity<>(headers);
             String productCodesCsv = String.join(",", productCodes);
             ResponseEntity<List<Promotion>> response = restTemplate.exchange(
-                    properties.promotionServiceUrl() + "/api/promotions?productCodes="+productCodesCsv, HttpMethod.GET, httpEntity,
-                    new ParameterizedTypeReference<>() {
-                    });
+                    properties.promotionServiceUrl() + "/api/promotions?productCodes=" + productCodesCsv,
+                    HttpMethod.GET,
+                    httpEntity,
+                    new ParameterizedTypeReference<>() {});
             return response.getBody();
         } catch (RuntimeException e) {
             log.error("Error: ", e);
@@ -53,7 +53,9 @@ public class RemotePromotionServiceClient implements PromotionServiceClient {
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<?> httpEntity = new HttpEntity<>(headers);
             ResponseEntity<Promotion> response = restTemplate.exchange(
-                    properties.promotionServiceUrl() + "/api/promotions/" + productCode, HttpMethod.GET, httpEntity,
+                    properties.promotionServiceUrl() + "/api/promotions/" + productCode,
+                    HttpMethod.GET,
+                    httpEntity,
                     Promotion.class);
             return Optional.ofNullable(response.getBody());
         } catch (RuntimeException e) {

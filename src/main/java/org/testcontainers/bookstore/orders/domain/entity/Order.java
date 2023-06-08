@@ -1,7 +1,6 @@
 package org.testcontainers.bookstore.orders.domain.entity;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -20,6 +19,7 @@ public class Order {
 
     @Column(nullable = false)
     private String customerName;
+
     @Column(nullable = false)
     private String customerEmail;
 
@@ -44,7 +44,6 @@ public class Order {
     private OrderStatus status;
 
     private String comments;
-
 
     public BigDecimal getTotalAmount() {
         BigDecimal amount = new BigDecimal("0.0");

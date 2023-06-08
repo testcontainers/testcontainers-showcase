@@ -6,8 +6,7 @@ public class OrderConfirmationDTO {
     private String orderId;
     private OrderStatus orderStatus;
 
-    public OrderConfirmationDTO() {
-    }
+    public OrderConfirmationDTO() {}
 
     public OrderConfirmationDTO(String orderId, OrderStatus orderStatus) {
         this.orderId = orderId;

@@ -1,14 +1,13 @@
 package org.testcontainers.bookstore.orders.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.testcontainers.bookstore.orders.api.CreateOrderRequest;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderItem;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 @Component
 public class OrderMapper {

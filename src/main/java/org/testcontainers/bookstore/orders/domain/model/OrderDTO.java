@@ -1,11 +1,10 @@
 package org.testcontainers.bookstore.orders.domain.model;
 
-import org.testcontainers.bookstore.orders.domain.entity.Order;
-import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
-
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.testcontainers.bookstore.orders.domain.entity.Order;
+import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
 
 public class OrderDTO {
     private Long id;
@@ -22,8 +21,7 @@ public class OrderDTO {
     private OrderStatus status;
     private String comments;
 
-    public OrderDTO() {
-    }
+    public OrderDTO() {}
 
     public OrderDTO(Order order) {
         this.setId(order.getId());
@@ -39,15 +37,17 @@ public class OrderDTO {
         this.setStatus(order.getStatus());
         this.setComments(order.getComments());
 
-        Set<OrderItemDTO> orderItemDTOs = order.getItems().stream().map(item -> {
-            OrderItemDTO itemDTO = new OrderItemDTO();
-            itemDTO.setId(item.getId());
-            itemDTO.setProductCode(item.getProductCode());
-            itemDTO.setProductName(item.getProductName());
-            itemDTO.setProductPrice(item.getProductPrice());
-            itemDTO.setQuantity(itemDTO.getQuantity());
-            return itemDTO;
-        }).collect(Collectors.toSet());
+        Set<OrderItemDTO> orderItemDTOs = order.getItems().stream()
+                .map(item -> {
+                    OrderItemDTO itemDTO = new OrderItemDTO();
+                    itemDTO.setId(item.getId());
+                    itemDTO.setProductCode(item.getProductCode());
+                    itemDTO.setProductName(item.getProductName());
+                    itemDTO.setProductPrice(item.getProductPrice());
+                    itemDTO.setQuantity(itemDTO.getQuantity());
+                    return itemDTO;
+                })
+                .collect(Collectors.toSet());
         this.setItems(orderItemDTOs);
     }
 

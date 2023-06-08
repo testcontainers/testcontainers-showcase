@@ -8,19 +8,23 @@ public class CreditCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String customerName;
+
     @Column(nullable = false)
     private String cardNumber;
+
     @Column(nullable = false)
     private String cvv;
+
     @Column(nullable = false)
     private int expiryMonth;
+
     @Column(nullable = false)
     private int expiryYear;
 
-    public CreditCard() {
-    }
+    public CreditCard() {}
 
     public CreditCard(Long id, String customerName, String cardNumber, String cvv, int expiryMonth, int expiryYear) {
         this.id = id;

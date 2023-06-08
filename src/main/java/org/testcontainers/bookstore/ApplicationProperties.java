@@ -8,6 +8,4 @@ public record ApplicationProperties(
         String promotionServiceUrl,
         String newOrdersTopic,
         String deliveredOrdersTopic,
-        String cancelledOrdersTopic
-) {
-}
+        String cancelledOrdersTopic) {}

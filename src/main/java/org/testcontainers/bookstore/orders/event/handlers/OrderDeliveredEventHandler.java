@@ -25,7 +25,7 @@ public class OrderDeliveredEventHandler {
     public void handle(OrderDeliveredEvent event) {
         log.info("Received a OrderDeliveredEvent with orderId:{}: ", event.getOrderId());
         Order order = orderService.findOrderByOrderId(event.getOrderId()).orElse(null);
-        if(order == null) {
+        if (order == null) {
             log.info("Received invalid OrderDeliveredEvent with orderId:{}: ", event.getOrderId());
             return;
         }

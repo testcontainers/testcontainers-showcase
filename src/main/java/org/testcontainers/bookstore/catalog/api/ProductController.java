@@ -16,16 +16,15 @@ public class ProductController {
     }
 
     @GetMapping
-    public PagedResult<Product> getProducts(@RequestParam(name = "page", defaultValue = "1") int pageNo,
-                                            @RequestParam(name = "pageSize", defaultValue = "20") int pageSize) {
+    public PagedResult<Product> getProducts(
+            @RequestParam(name = "page", defaultValue = "1") int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "20") int pageSize) {
         return productService.getProducts(pageNo, pageSize);
     }
 
     @GetMapping("/{code}")
     public ResponseEntity<Product> getProductByCode(@PathVariable String code) {
-        return productService.getProductByCode(code)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return productService.getProductByCode(code).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound()
+                .build());
     }
-
 }

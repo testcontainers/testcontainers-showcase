@@ -25,7 +25,7 @@ public class OrderCancelledEventHandler {
     public void handle(OrderCancelledEvent event) {
         log.info("Received a OrderCancelledEvent with orderId:{}: ", event.getOrderId());
         Order order = orderService.findOrderByOrderId(event.getOrderId()).orElse(null);
-        if(order == null) {
+        if (order == null) {
             log.info("Received invalid OrderCancelledEvent with orderId:{}: ", event.getOrderId());
             return;
         }

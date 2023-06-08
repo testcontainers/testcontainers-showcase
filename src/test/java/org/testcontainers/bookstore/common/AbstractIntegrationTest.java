@@ -1,6 +1,13 @@
 package org.testcontainers.bookstore.common;
 
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+import static org.mockserver.model.JsonBody.json;
+
 import io.restassured.RestAssured;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +30,6 @@ import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.function.Supplier;
-
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.JsonBody.json;
-
 @ExtendWith(TimeChecker.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -38,9 +37,12 @@ public abstract class AbstractIntegrationTest {
 
     protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
     protected static final MongoDBContainer mongodb = new MongoDBContainer("mongo:4.2");
-    protected static GenericContainer<?> kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
-    protected static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0.5-alpine")).withExposedPorts(6379);
-    protected static final MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
+    protected static GenericContainer<?> kafka =
+            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.2.1"));
+    protected static final GenericContainer<?> redis =
+            new GenericContainer<>(DockerImageName.parse("redis:7.0.5-alpine")).withExposedPorts(6379);
+    protected static final MockServerContainer mockServer =
+            new MockServerContainer(DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
 
     protected static MockServerClient mockServerClient;
 
@@ -60,13 +62,11 @@ public abstract class AbstractIntegrationTest {
             new Product(null, "P100", "Product 1", "Product 1 desc", null, BigDecimal.TEN),
             new Product(null, "P101", "Product 2", "Product 2 desc", null, BigDecimal.valueOf(24)),
             new Product(null, "P102", "Product 3", "Product 3 desc", null, BigDecimal.valueOf(34)),
-            new Product(null, "P103", "Product 4", "Product 4 desc", null, BigDecimal.valueOf(44))
-    );
+            new Product(null, "P103", "Product 4", "Product 4 desc", null, BigDecimal.valueOf(44)));
     protected List<CreditCard> creditCards = List.of(
             new CreditCard(null, "John", "1111222233334444", "123", 2, 2030),
             new CreditCard(null, "Siva", "1234123412341234", "123", 10, 2030),
-            new CreditCard(null, "Kevin", "1234567890123456", "123", 3, 2030)
-    );
+            new CreditCard(null, "Kevin", "1234567890123456", "123", 3, 2030));
 
     @BeforeEach
     void setUpBase() {
@@ -101,24 +101,22 @@ public abstract class AbstractIntegrationTest {
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
     }
 
-    @NotNull
-    private static Supplier<Object> getBootstrapUrl() {
-        if (kafka instanceof KafkaContainer kafkaContainer)
-            return kafkaContainer::getBootstrapServers;
-        if (kafka instanceof RedpandaContainer redpanda)
-            return redpanda::getBootstrapServers;
+    @NotNull private static Supplier<Object> getBootstrapUrl() {
+        if (kafka instanceof KafkaContainer kafkaContainer) return kafkaContainer::getBootstrapServers;
+        if (kafka instanceof RedpandaContainer redpanda) return redpanda::getBootstrapServers;
         else throw new RuntimeException("Unknown Kafka");
     }
 
     protected static void mockGetPromotions() {
-        mockServerClient.when(
-                        request().withMethod("GET").withPath("/api/promotions?productCodes=.*"))
+        mockServerClient
+                .when(request().withMethod("GET").withPath("/api/promotions?productCodes=.*"))
                 .respond(
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json; charset=utf-8"))
-                                .withBody(json(
-                                        """
+                                .withBody(
+                                        json(
+                                                """
                                                 [
                                                     {
                                                         "productCode": "P100",
@@ -129,26 +127,22 @@ public abstract class AbstractIntegrationTest {
                                                         "discount": 1.5
                                                     }
                                                 ]
-                                                """
-                                ))
-                );
+                                                """)));
     }
 
     protected static void mockGetPromotion(String productCode, BigDecimal discount) {
-        mockServerClient.when(
-                        request().withMethod("GET").withPath("/api/promotions/.*"))
-                .respond(
-                        response()
-                                .withStatusCode(200)
-                                .withHeaders(new Header("Content-Type", "application/json; charset=utf-8"))
-                                .withBody(json(
-                                        """
+        mockServerClient
+                .when(request().withMethod("GET").withPath("/api/promotions/.*"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeaders(new Header("Content-Type", "application/json; charset=utf-8"))
+                        .withBody(json(
+                                """
                                                     {
                                                         "productCode": "%s",
                                                         "discount": %f
                                                     }
-                                                """.formatted(productCode, discount.doubleValue())
-                                ))
-                );
+                                                """
+                                        .formatted(productCode, discount.doubleValue()))));
     }
 }

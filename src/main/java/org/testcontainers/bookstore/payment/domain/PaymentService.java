@@ -1,8 +1,7 @@
 package org.testcontainers.bookstore.payment.domain;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentService {
@@ -14,13 +13,13 @@ public class PaymentService {
 
     public PaymentResponse authorize(PaymentRequest request) {
         Optional<CreditCard> creditCardOptional = creditCardRepository.findByCardNumber(request.getCardNumber());
-        if(creditCardOptional.isEmpty()) {
+        if (creditCardOptional.isEmpty()) {
             return new PaymentResponse(PaymentResponse.PaymentStatus.REJECTED);
         }
         CreditCard creditCard = creditCardOptional.get();
-        if(creditCard.getCvv().equals(request.getCvv()) &&
-        creditCard.getExpiryMonth() == request.getExpiryMonth() &&
-        creditCard.getExpiryYear() == request.getExpiryYear()) {
+        if (creditCard.getCvv().equals(request.getCvv())
+                && creditCard.getExpiryMonth() == request.getExpiryMonth()
+                && creditCard.getExpiryYear() == request.getExpiryYear()) {
             return new PaymentResponse(PaymentResponse.PaymentStatus.ACCEPTED);
         }
         return new PaymentResponse(PaymentResponse.PaymentStatus.REJECTED);

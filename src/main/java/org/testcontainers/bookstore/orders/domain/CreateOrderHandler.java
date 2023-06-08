@@ -18,7 +18,8 @@ public class CreateOrderHandler {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ApplicationProperties properties;
 
-    public CreateOrderHandler(OrderService orderService, KafkaTemplate<String, Object> kafkaTemplate, ApplicationProperties properties) {
+    public CreateOrderHandler(
+            OrderService orderService, KafkaTemplate<String, Object> kafkaTemplate, ApplicationProperties properties) {
         this.orderService = orderService;
         this.kafkaTemplate = kafkaTemplate;
         this.properties = properties;
@@ -26,7 +27,7 @@ public class CreateOrderHandler {
 
     public OrderConfirmationDTO createOrder(CreateOrderRequest orderRequest) {
         OrderConfirmationDTO orderConfirmationDTO = orderService.createOrder(orderRequest);
-        if(orderConfirmationDTO.getOrderStatus() == OrderStatus.NEW) {
+        if (orderConfirmationDTO.getOrderStatus() == OrderStatus.NEW) {
             kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(orderConfirmationDTO.getOrderId()));
             log.info("Published OrderCreatedEvent for orderId:{}", orderConfirmationDTO.getOrderId());
         }

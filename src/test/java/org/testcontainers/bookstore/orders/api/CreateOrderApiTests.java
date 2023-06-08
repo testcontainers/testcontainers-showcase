@@ -1,6 +1,14 @@
 package org.testcontainers.bookstore.orders.api;
 
+import static io.restassured.RestAssured.given;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 import io.restassured.http.ContentType;
+import java.time.Duration;
+import java.util.Optional;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +19,6 @@ import org.testcontainers.bookstore.orders.domain.OrderService;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
 import org.testcontainers.bookstore.orders.domain.model.OrderConfirmationDTO;
-
-import java.time.Duration;
-import java.util.Optional;
-
-import static io.restassured.RestAssured.given;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class CreateOrderApiTests extends AbstractIntegrationTest {
 
@@ -32,15 +31,9 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
     private OrderService orderService;
 
     @ParameterizedTest
-    @CsvSource({
-            "P100",
-            "P101",
-            "P102",
-            "P103"
-    })
+    @CsvSource({"P100", "P101", "P102", "P103"})
     void shouldCreateOrderSuccessfully(String productCode) {
-        OrderConfirmationDTO orderConfirmationDTO = given()
-                .contentType(ContentType.JSON)
+        OrderConfirmationDTO orderConfirmationDTO = given().contentType(ContentType.JSON)
                 .body(
                         """
                                 {
@@ -65,15 +58,17 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """.formatted(productCode)
-                )
+                                """
+                                .formatted(productCode))
                 .when()
                 .post("/api/orders")
                 .then()
                 .statusCode(202)
                 .body("orderId", notNullValue())
                 .body("orderStatus", is("NEW"))
-                .extract().body().as(OrderConfirmationDTO.class);
+                .extract()
+                .body()
+                .as(OrderConfirmationDTO.class);
 
         await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).until(() -> {
             Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
@@ -82,15 +77,9 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "1111111111111",
-            "2222222222222",
-            "3333333333333",
-            "4444444444444"
-    })
+    @CsvSource({"1111111111111", "2222222222222", "3333333333333", "4444444444444"})
     void shouldCreateOrderWithErrorStatusWhenPaymentRejected(String cardNumber) {
-        given()
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .body(
                         """
                                 {
@@ -115,27 +104,20 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """.formatted(cardNumber)
-                )
+                                """
+                                .formatted(cardNumber))
                 .when()
                 .post("/api/orders")
                 .then()
                 .statusCode(202)
                 .body("orderId", notNullValue())
-                .body("orderStatus", is("ERROR"))
-        ;
+                .body("orderStatus", is("ERROR"));
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "1111111111111",
-            "2222222222222",
-            "3333333333333",
-            "4444444444444"
-    })
+    @CsvSource({"1111111111111", "2222222222222", "3333333333333", "4444444444444"})
     void shouldReturnBadRequestWhenMandatoryDataIsMissing(String cardNumber) {
-        given()
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .body(
                         """
                                 {
@@ -152,25 +134,18 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """.formatted(cardNumber)
-                )
+                                """
+                                .formatted(cardNumber))
                 .when()
                 .post("/api/orders")
                 .then()
-                .statusCode(400)
-        ;
+                .statusCode(400);
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "Belgium",
-            "Denmark",
-            "Dubai",
-            "Poland"
-    })
+    @CsvSource({"Belgium", "Denmark", "Dubai", "Poland"})
     void shouldCancelOrderWhenCanNotBeDelivered(String country) {
-        OrderConfirmationDTO orderConfirmationDTO = given()
-                .contentType(ContentType.JSON)
+        OrderConfirmationDTO orderConfirmationDTO = given().contentType(ContentType.JSON)
                 .body(
                         """
                                 {
@@ -195,15 +170,17 @@ public class CreateOrderApiTests extends AbstractIntegrationTest {
                                         }
                                     ]
                                 }
-                                """.formatted(country)
-                )
+                                """
+                                .formatted(country))
                 .when()
                 .post("/api/orders")
                 .then()
                 .statusCode(202)
                 .body("orderId", notNullValue())
                 .body("orderStatus", is("NEW"))
-                .extract().body().as(OrderConfirmationDTO.class);
+                .extract()
+                .body()
+                .as(OrderConfirmationDTO.class);
 
         await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).until(() -> {
             Optional<Order> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());

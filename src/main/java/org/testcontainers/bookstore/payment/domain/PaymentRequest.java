@@ -6,15 +6,15 @@ import jakarta.validation.constraints.NotNull;
 public class PaymentRequest {
     @NotBlank(message = "cardNumber is required")
     private String cardNumber;
+
     @NotBlank(message = "cvv is required")
     private String cvv;
-    @NotNull(message = "expiryMonth is required")
-    private Integer expiryMonth;
-    @NotNull(message = "expiryYear is required")
-    private Integer expiryYear;
 
-    public PaymentRequest() {
-    }
+    @NotNull(message = "expiryMonth is required") private Integer expiryMonth;
+
+    @NotNull(message = "expiryYear is required") private Integer expiryYear;
+
+    public PaymentRequest() {}
 
     public PaymentRequest(String cardNumber, String cvv, Integer expiryMonth, Integer expiryYear) {
         this.cardNumber = cardNumber;

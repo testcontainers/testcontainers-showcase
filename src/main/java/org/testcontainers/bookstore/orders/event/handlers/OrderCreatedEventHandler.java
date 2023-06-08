@@ -1,5 +1,6 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,8 +15,6 @@ import org.testcontainers.bookstore.orders.domain.OrderService;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
 
-import java.util.List;
-
 @Component
 public class OrderCreatedEventHandler {
     private static final Logger log = LoggerFactory.getLogger(OrderCreatedEventHandler.class);
@@ -26,8 +25,11 @@ public class OrderCreatedEventHandler {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ApplicationProperties properties;
 
-    public OrderCreatedEventHandler(OrderService orderService, NotificationService notificationService,
-                                    KafkaTemplate<String, Object> kafkaTemplate, ApplicationProperties properties) {
+    public OrderCreatedEventHandler(
+            OrderService orderService,
+            NotificationService notificationService,
+            KafkaTemplate<String, Object> kafkaTemplate,
+            ApplicationProperties properties) {
         this.orderService = orderService;
         this.notificationService = notificationService;
         this.kafkaTemplate = kafkaTemplate;
@@ -43,8 +45,13 @@ public class OrderCreatedEventHandler {
             return;
         }
         if (order.getStatus() != OrderStatus.NEW) {
-            log.warn("Received a OrderCreatedEvent with invalid status:{} for orderId:{}: ", order.getStatus(), event.getOrderId());
-            orderService.updateOrderStatus(order.getOrderId(), OrderStatus.ERROR,
+            log.warn(
+                    "Received a OrderCreatedEvent with invalid status:{} for orderId:{}: ",
+                    order.getStatus(),
+                    event.getOrderId());
+            orderService.updateOrderStatus(
+                    order.getOrderId(),
+                    OrderStatus.ERROR,
                     "Received a new order with invalid status=" + order.getStatus());
             return;
         }
@@ -54,13 +61,14 @@ public class OrderCreatedEventHandler {
             orderService.updateOrderStatus(order.getOrderId(), OrderStatus.DELIVERED, null);
             kafkaTemplate.send(properties.deliveredOrdersTopic(), new OrderDeliveredEvent(order.getOrderId()));
         } else {
-            orderService.updateOrderStatus(order.getOrderId(), OrderStatus.CANCELLED, "Can't deliver to your delivery address");
+            orderService.updateOrderStatus(
+                    order.getOrderId(), OrderStatus.CANCELLED, "Can't deliver to your delivery address");
             kafkaTemplate.send(properties.cancelledOrdersTopic(), new OrderCancelledEvent(order.getOrderId()));
         }
     }
 
     private boolean canBeDelivered(Order order) {
-        return DELIVERY_ALLOWED_COUNTRIES.contains(order.getDeliveryAddressCountry().toUpperCase());
+        return DELIVERY_ALLOWED_COUNTRIES.contains(
+                order.getDeliveryAddressCountry().toUpperCase());
     }
-
 }

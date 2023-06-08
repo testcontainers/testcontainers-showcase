@@ -1,5 +1,10 @@
 package org.testcontainers.bookstore.catalog.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,12 +18,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
 @Testcontainers
@@ -51,24 +50,14 @@ class ProductRepositoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "P100, 10",
-            "P101, 24",
-            "P102, 34",
-            "P103, 44"
-    })
+    @CsvSource({"P100, 10", "P101, 24", "P102, 34", "P103, 44"})
     void shouldFailToProductWithDuplicateCode(String productCode, BigDecimal price) {
         var product = new Product(null, productCode, "Product name", "Product desc", null, price);
-        Assertions.assertThrows(DuplicateKeyException.class, ()-> productRepository.save(product));
+        Assertions.assertThrows(DuplicateKeyException.class, () -> productRepository.save(product));
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "P100, 10",
-            "P101, 24",
-            "P102, 34",
-            "P103, 44"
-    })
+    @CsvSource({"P100, 10", "P101, 24", "P102, 34", "P103, 44"})
     void shouldGetProductByCode(String productCode, BigDecimal price) {
         Optional<Product> optionalProduct = productRepository.findByCode(productCode);
         assertThat(optionalProduct).isNotEmpty();

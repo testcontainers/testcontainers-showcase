@@ -1,18 +1,17 @@
 package org.testcontainers.bookstore.catalog.api;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.http.ContentType;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.bookstore.common.AbstractIntegrationTest;
-
-import java.math.BigDecimal;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 
 public class ProductControllerTest extends AbstractIntegrationTest {
 
@@ -25,8 +24,7 @@ public class ProductControllerTest extends AbstractIntegrationTest {
     void shouldGetAllProducts() {
         mockGetPromotions();
 
-        given()
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .when()
                 .get("/api/products")
                 .then()
@@ -44,8 +42,7 @@ public class ProductControllerTest extends AbstractIntegrationTest {
     @Test
     void shouldGetProductByCode() {
         mockGetPromotion("P100", new BigDecimal("2.5"));
-        given()
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .when()
                 .get("/api/products/{code}", "P100")
                 .then()
@@ -53,21 +50,19 @@ public class ProductControllerTest extends AbstractIntegrationTest {
                 .body("code", is("P100"))
                 .body("name", is("Product 1"))
                 .body("description", is("Product 1 desc"))
-                .body("price", is(7.5f))
-        ;
+                .body("price", is(7.5f));
     }
 
-
     @ParameterizedTest
-    @ValueSource(strings = {
-            "non-existing-product-code-1",
-            "non-existing-product-code-2",
-            "non-existing-product-code-3",
-            "non-existing-product-code-4"
-    })
+    @ValueSource(
+            strings = {
+                "non-existing-product-code-1",
+                "non-existing-product-code-2",
+                "non-existing-product-code-3",
+                "non-existing-product-code-4"
+            })
     void shouldReturnNotFoundWhenProductCodeNotExists(String productCode) {
-        given()
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .when()
                 .get("/api/products/{code}", productCode)
                 .then()

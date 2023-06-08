@@ -1,23 +1,22 @@
 package org.testcontainers.bookstore.cart.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
-
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @RedisHash("carts")
 public class Cart {
     @Id
     private String id;
+
     private Set<CartItem> items = new HashSet<>();
 
-    public Cart() {
-    }
+    public Cart() {}
 
     public Cart(String id) {
         this.id = id;
@@ -30,7 +29,7 @@ public class Cart {
     }
 
     public static Cart withNewId() {
-       return new Cart(UUID.randomUUID().toString());
+        return new Cart(UUID.randomUUID().toString());
     }
 
     public void addItem(CartItem item) {
@@ -69,9 +68,7 @@ public class Cart {
     }
 
     public BigDecimal getCartTotal() {
-        return items.stream()
-                .map(CartItem::getSubTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return items.stream().map(CartItem::getSubTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public String getId() {

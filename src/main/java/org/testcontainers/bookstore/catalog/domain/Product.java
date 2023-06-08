@@ -1,24 +1,24 @@
 package org.testcontainers.bookstore.catalog.domain;
 
+import java.math.BigDecimal;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
-
-@Document(collection="products")
+@Document(collection = "products")
 public class Product {
     @Id
     private String id;
+
     @Indexed(unique = true)
     private String code;
+
     private String name;
     private String description;
     private String imageUrl;
     private BigDecimal price;
 
-    public Product() {
-    }
+    public Product() {}
 
     public Product(String id, String code, String name, String description, String imageUrl, BigDecimal price) {
         this.id = id;
