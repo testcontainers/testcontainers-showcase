@@ -37,8 +37,9 @@ public class CartController {
     }
 
     @PostMapping
-    public Cart addToCart(@RequestParam(name = "cartId", required = false) String cartId,
-                          @RequestBody CartItemRequestDTO cartItemRequest) {
+    public Cart addToCart(
+            @RequestParam(name = "cartId", required = false) String cartId,
+            @RequestBody CartItemRequestDTO cartItemRequest) {
         Cart cart;
         if (!StringUtils.hasText(cartId)) {
             cart = Cart.withNewId();
@@ -46,22 +47,30 @@ public class CartController {
             cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException(cartId));
         }
         log.info("Add productCode: {} to cart", cartItemRequest.getProductCode());
-        Product product = productService.getProductByCode(cartItemRequest.getProductCode())
+        Product product = productService
+                .getProductByCode(cartItemRequest.getProductCode())
                 .orElseThrow(() -> new ProductNotFoundException(cartItemRequest.getProductCode()));
-        CartItem cartItem = new CartItem(product.getCode(), product.getName(),
-                product.getDescription(), product.getPrice(),
+        CartItem cartItem = new CartItem(
+                product.getCode(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
                 cartItemRequest.getQuantity() > 0 ? cartItemRequest.getQuantity() : 1);
         cart.addItem(cartItem);
         return cartRepository.save(cart);
     }
 
     @PutMapping
-    public Cart updateCartItemQuantity(@RequestParam(name = "cartId") String cartId,
-                                       @RequestBody CartItemRequestDTO cartItemRequest) {
+    public Cart updateCartItemQuantity(
+            @RequestParam(name = "cartId") String cartId, @RequestBody CartItemRequestDTO cartItemRequest) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException(cartId));
-        log.info("Update quantity: {} for productCode:{} quantity in cart: {}", cartItemRequest.getQuantity(),
-                cartItemRequest.getProductCode(), cartId);
-        Product product = productService.getProductByCode(cartItemRequest.getProductCode())
+        log.info(
+                "Update quantity: {} for productCode:{} quantity in cart: {}",
+                cartItemRequest.getQuantity(),
+                cartItemRequest.getProductCode(),
+                cartId);
+        Product product = productService
+                .getProductByCode(cartItemRequest.getProductCode())
                 .orElseThrow(() -> new ProductNotFoundException(cartItemRequest.getProductCode()));
         if (cartItemRequest.getQuantity() <= 0) {
             cart.removeItem(product.getCode());
@@ -72,8 +81,8 @@ public class CartController {
     }
 
     @DeleteMapping(value = "/items/{productCode}")
-    public Cart removeCartItem(@RequestParam(name = "cartId") String cartId,
-                               @PathVariable("productCode") String productCode) {
+    public Cart removeCartItem(
+            @RequestParam(name = "cartId") String cartId, @PathVariable("productCode") String productCode) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException(cartId));
         log.info("Remove cart line item productCode: {}", productCode);
         cart.removeItem(productCode);

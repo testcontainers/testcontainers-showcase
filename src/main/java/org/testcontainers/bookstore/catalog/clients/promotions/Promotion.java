@@ -7,8 +7,7 @@ public class Promotion {
     private String productCode;
     private BigDecimal discount;
 
-    public Promotion() {
-    }
+    public Promotion() {}
 
     public Promotion(Long id, String productCode, BigDecimal discount) {
         this.id = id;

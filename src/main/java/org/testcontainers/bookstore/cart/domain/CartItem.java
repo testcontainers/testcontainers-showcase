@@ -1,7 +1,6 @@
 package org.testcontainers.bookstore.cart.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.math.BigDecimal;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -13,10 +12,10 @@ public class CartItem {
     private int quantity;
 
     @JsonIgnoreProperties
-    public CartItem() {
-    }
+    public CartItem() {}
 
-    public CartItem(String productCode, String productName, String productDescription, BigDecimal productPrice, int quantity) {
+    public CartItem(
+            String productCode, String productName, String productDescription, BigDecimal productPrice, int quantity) {
         this.productCode = productCode;
         this.productName = productName;
         this.productDescription = productDescription;

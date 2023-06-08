@@ -3,8 +3,7 @@ package org.testcontainers.bookstore.payment.domain;
 public class PaymentResponse {
     private PaymentStatus status;
 
-    public PaymentResponse() {
-    }
+    public PaymentResponse() {}
 
     public PaymentResponse(PaymentStatus status) {
         this.status = status;
@@ -19,6 +18,7 @@ public class PaymentResponse {
     }
 
     public enum PaymentStatus {
-        ACCEPTED, REJECTED
+        ACCEPTED,
+        REJECTED
     }
 }

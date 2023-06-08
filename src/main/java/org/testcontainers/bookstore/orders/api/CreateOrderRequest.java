@@ -1,7 +1,6 @@
 package org.testcontainers.bookstore.orders.api;
 
 import jakarta.validation.constraints.*;
-
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -40,11 +39,9 @@ public class CreateOrderRequest {
     @NotBlank(message = "CVV is required")
     private String cvv;
 
-    @NotNull
-    private Integer expiryMonth;
+    @NotNull private Integer expiryMonth;
 
-    @NotNull
-    private Integer expiryYear;
+    @NotNull private Integer expiryYear;
 
     public Set<LineItem> getItems() {
         return items;
@@ -153,14 +150,14 @@ public class CreateOrderRequest {
     public static class LineItem {
         @NotBlank(message = "productCode is required")
         private String productCode;
+
         private String productName;
         private BigDecimal productPrice;
-        @NotNull
-        @Min(1)
+
+        @NotNull @Min(1)
         private Integer quantity;
 
-        public LineItem() {
-        }
+        public LineItem() {}
 
         public LineItem(String productCode, String productName, BigDecimal productPrice, Integer quantity) {
             this.productCode = productCode;

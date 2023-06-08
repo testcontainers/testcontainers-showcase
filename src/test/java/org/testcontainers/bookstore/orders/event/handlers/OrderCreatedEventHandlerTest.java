@@ -1,5 +1,14 @@
 package org.testcontainers.bookstore.orders.event.handlers;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import java.time.Duration;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +22,6 @@ import org.testcontainers.bookstore.events.OrderCreatedEvent;
 import org.testcontainers.bookstore.orders.domain.OrderRepository;
 import org.testcontainers.bookstore.orders.domain.entity.Order;
 import org.testcontainers.bookstore.orders.domain.entity.OrderStatus;
-
-import java.time.Duration;
-import java.util.UUID;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 public class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
     private static final Logger log = LoggerFactory.getLogger(OrderCreatedEventHandlerTest.class);
@@ -71,7 +70,6 @@ public class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService, never()).sendConfirmationNotification(any(Order.class));
         });
-
     }
 
     @Test
@@ -95,7 +93,6 @@ public class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
             verify(notificationService).sendConfirmationNotification(any(Order.class));
         });
-
     }
 
     @Test
@@ -117,9 +114,9 @@ public class OrderCreatedEventHandlerTest extends AbstractIntegrationTest {
         kafkaTemplate.send(properties.newOrdersTopic(), new OrderCreatedEvent(order.getOrderId()));
 
         await().pollInterval(Duration.ofSeconds(5)).atMost(30, SECONDS).untilAsserted(() -> {
-            Order verifyingOrder = orderRepository.findByOrderId(order.getOrderId()).orElseThrow();
+            Order verifyingOrder =
+                    orderRepository.findByOrderId(order.getOrderId()).orElseThrow();
             assertThat(verifyingOrder.getStatus()).isEqualTo(OrderStatus.CANCELLED);
         });
-
     }
 }

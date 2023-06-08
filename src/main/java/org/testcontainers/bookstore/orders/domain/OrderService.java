@@ -1,5 +1,6 @@
 package org.testcontainers.bookstore.orders.domain;
 
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,6 @@ import org.testcontainers.bookstore.orders.domain.model.OrderConfirmationDTO;
 import org.testcontainers.bookstore.payment.domain.PaymentRequest;
 import org.testcontainers.bookstore.payment.domain.PaymentResponse;
 import org.testcontainers.bookstore.payment.domain.PaymentService;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -38,7 +37,7 @@ public class OrderService {
                 orderRequest.getCardNumber(), orderRequest.getCvv(),
                 orderRequest.getExpiryMonth(), orderRequest.getExpiryYear());
         PaymentResponse paymentResponse = paymentService.authorize(paymentRequest);
-        if(paymentResponse.getStatus() != PaymentResponse.PaymentStatus.ACCEPTED) {
+        if (paymentResponse.getStatus() != PaymentResponse.PaymentStatus.ACCEPTED) {
             savedOrder.setStatus(OrderStatus.ERROR);
             this.updateOrderStatus(savedOrder.getOrderId(), savedOrder.getStatus(), "Payment rejected");
         }
@@ -55,5 +54,4 @@ public class OrderService {
         order.setComments(comments);
         orderRepository.save(order);
     }
-
 }

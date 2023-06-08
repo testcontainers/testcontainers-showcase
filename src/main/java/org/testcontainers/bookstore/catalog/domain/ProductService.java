@@ -1,5 +1,10 @@
 package org.testcontainers.bookstore.catalog.domain;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -7,12 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.testcontainers.bookstore.catalog.clients.promotions.Promotion;
 import org.testcontainers.bookstore.catalog.clients.promotions.PromotionServiceClient;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -33,16 +32,16 @@ public class ProductService {
     }
 
     public Optional<Product> getProductByCode(String code) {
-        return productRepository.findByCode(code)
-                .map(product -> {
-                    Optional<Promotion> promotion = promotionServiceClient.getPromotion(product.getCode());
-                    promotion.ifPresent(value -> product.setPrice(product.getPrice().subtract(value.getDiscount())));
-                    return product;
-                });
+        return productRepository.findByCode(code).map(product -> {
+            Optional<Promotion> promotion = promotionServiceClient.getPromotion(product.getCode());
+            promotion.ifPresent(value -> product.setPrice(product.getPrice().subtract(value.getDiscount())));
+            return product;
+        });
     }
 
     private Page<Product> applyPromotionDiscount(Page<Product> productsPage) {
-        List<String> productCodes = productsPage.getContent().stream().map(Product::getCode).toList();
+        List<String> productCodes =
+                productsPage.getContent().stream().map(Product::getCode).toList();
         List<Promotion> promotions = promotionServiceClient.getPromotions(productCodes);
         Map<String, BigDecimal> promotionsMap =
                 promotions.stream().collect(Collectors.toMap(Promotion::getProductCode, Promotion::getDiscount));
@@ -52,8 +51,8 @@ public class ProductService {
                 product.getName(),
                 product.getDescription(),
                 product.getImageUrl(),
-                promotionsMap.containsKey(product.getCode()) ?
-                        product.getPrice().subtract(promotionsMap.get(product.getCode())) : product.getPrice()
-        ));
+                promotionsMap.containsKey(product.getCode())
+                        ? product.getPrice().subtract(promotionsMap.get(product.getCode()))
+                        : product.getPrice()));
     }
 }

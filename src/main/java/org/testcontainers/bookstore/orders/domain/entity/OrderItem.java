@@ -1,7 +1,6 @@
 package org.testcontainers.bookstore.orders.domain.entity;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 
 @Entity
@@ -14,11 +13,15 @@ public class OrderItem {
 
     @Column(nullable = false)
     private String productCode;
+
     private String productName;
+
     @Column(nullable = false)
     private BigDecimal productPrice;
+
     @Column(nullable = false)
     private Integer quantity;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "order_id")
     private Order order;
