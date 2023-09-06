@@ -5,21 +5,21 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- displayName: 'SetUp TC Cloud Agent'
-  task: Bash@3
+- task: Bash@3
   inputs:
       targetType: "inline"
       script: 'sh -c "$(curl -fsSL https://get.testcontainers.cloud/bash)"'
   env:
       TC_CLOUD_TOKEN: $(TC_CLOUD_TOKEN)
+  displayName: 'SetUp TC Cloud Agent'
 
-- displayName: 'SetUp Java'
-  task: JavaToolInstaller@0
+- task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
+  displayName: 'SetUp Java'
 
-- displayName: 'Build with Maven'
-  script: |
+- script: |
     ./mvnw verify
+  displayName: 'Build with Maven'
