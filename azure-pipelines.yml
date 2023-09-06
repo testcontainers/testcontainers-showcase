@@ -1,17 +1,25 @@
 trigger:
-- '*'
+  - '*'
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
-  displayName: 'SetUp Java'
+  - task: Bash@3
+    inputs:
+      targetType: "inline"
+      script: 'sh -c "$(curl -fsSL https://get.testcontainers.cloud/bash)"'
+    env:
+      TC_CLOUD_TOKEN: $(TC_CLOUD_TOKEN)
+    displayName: 'SetUp TC Cloud Agent'
 
-- script: |
-    ./mvnw verify
-  displayName: 'Build with Maven'
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+    displayName: 'SetUp Java'
+
+  - script: |
+      ./mvnw verify
+    displayName: 'Build with Maven'
