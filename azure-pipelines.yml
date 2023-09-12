@@ -13,5 +13,5 @@ steps:
     displayName: 'SetUp Java'
 
   - script: |
-      ./mvnw verify -DforkCount=4
+      ./mvnw verify -DforkCount=2
     displayName: 'Build with Maven'
