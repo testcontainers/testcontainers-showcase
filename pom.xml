@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.testcontainers</groupId>
@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <testcontainers.version>1.19.1</testcontainers.version>
         <mockserver-netty.version>5.13.2</mockserver-netty.version>
         <webjars-locator.version>0.46</webjars-locator.version>
         <bootstrap.version>5.2.2</bootstrap.version>
