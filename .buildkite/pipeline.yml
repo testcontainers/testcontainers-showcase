@@ -1,5 +1,4 @@
 steps:
   - label: "Test"
     commands:
-      - sh -c "$(curl -fsSL https://get.testcontainers.cloud/bash)"
       - ./mvnw test
