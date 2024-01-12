@@ -42,7 +42,7 @@ public abstract class AbstractIntegrationTest {
     protected static final GenericContainer<?> redis =
             new GenericContainer<>(DockerImageName.parse("redis:7.0.5-alpine")).withExposedPorts(6379);
     protected static final MockServerContainer mockServer =
-            new MockServerContainer(DockerImageName.parse("mockserver/mockserver:mockserver-5.13.2"));
+            new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.15.0"));
 
     protected static MockServerClient mockServerClient;
 

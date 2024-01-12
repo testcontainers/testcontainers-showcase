@@ -18,7 +18,7 @@
     <properties>
         <java.version>17</java.version>
         <testcontainers.version>1.19.3</testcontainers.version>
-        <mockserver-netty.version>5.13.2</mockserver-netty.version>
+        <mockserver-netty.version>5.15.0</mockserver-netty.version>
         <webjars-locator.version>0.46</webjars-locator.version>
         <bootstrap.version>5.2.2</bootstrap.version>
         <jquery.version>3.6.1</jquery.version>
