@@ -7,7 +7,7 @@ pipeline {
        stage('Build') {
            steps {
                sh 'java -version'
-               sh './mvnw verify'
+               sh './mvnw --ntp verify'
            }
        }
    }
