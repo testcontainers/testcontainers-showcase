@@ -7,6 +7,7 @@ pipeline {
        stage('Build') {
            steps {
                sh 'java -version'
+               sh 'docker version'
                sh './mvnw --ntp verify'
            }
        }
