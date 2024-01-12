@@ -1,0 +1,8 @@
+FROM jenkins/ssh-agent:alpine-jdk17
+USER root
+#RUN apt update && curl -fsSL https://get.docker.com | sh
+#RUN usermod -aG docker jenkins
+
+RUN apk update && apk add --update docker openrc busybox-extras
+
+#USER jenkins
