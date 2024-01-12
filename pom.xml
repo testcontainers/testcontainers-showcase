@@ -16,7 +16,7 @@
     <name>testcontainers-showcase</name>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <testcontainers.version>1.19.3</testcontainers.version>
         <mockserver-netty.version>5.13.2</mockserver-netty.version>
         <webjars-locator.version>0.46</webjars-locator.version>
